@@ -38,6 +38,7 @@ import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.shapes.StructureShape;
 import software.amazon.smithy.model.traits.DocumentationTrait;
 import software.amazon.smithy.model.traits.DynamicTrait;
+import software.amazon.smithy.model.traits.RequiredTrait;
 import software.amazon.smithy.model.traits.StringTrait;
 import software.amazon.smithy.model.traits.Trait;
 import software.amazon.smithy.model.traits.TraitFactory;
@@ -273,5 +274,20 @@ public class IdlModelLoaderTest {
 
         // Make sure we can find our Unit type
         assertThat(model.expectShape(ShapeId.from("smithy.example#Unit")), Matchers.notNullValue());
+    }
+
+    @Test
+    public void addsLocationToRequiredSugarTraits() {
+        Model model = Model.assembler()
+                .addImport(getClass().getResource("required-sugar-test.smithy"))
+                .assemble()
+                .unwrap();
+
+        StructureShape shape = model.expectShape(ShapeId.from("smithy.example#MyStruct"), StructureShape.class);
+        MemberShape member = shape.getMember("foo").get();
+        RequiredTrait trait = member.expectTrait(RequiredTrait.class);
+
+        assertThat(trait.getSourceLocation().getLine(), equalTo(4));
+        assertThat(trait.getSourceLocation().getColumn(), equalTo(16));
     }
 }
