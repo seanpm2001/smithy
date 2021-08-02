@@ -161,6 +161,7 @@ final class CompositeModelFile implements ModelFile {
                 }
             }
         }
+    }
 
         return new CreatedShapes(createdShapes.values(), Collections.emptyList());
     }

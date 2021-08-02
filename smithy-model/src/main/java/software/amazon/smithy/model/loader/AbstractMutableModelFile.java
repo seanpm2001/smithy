@@ -89,6 +89,7 @@ abstract class AbstractMutableModelFile implements ModelFile {
                     "%s shapes cannot be used in Smithy version " + getVersion(), builder.getShapeType().toString()),
                     builder.getSourceLocation());
         }
+    }
 
         if (builder instanceof MemberShape.Builder) {
             String memberName = builder.getId().getMember().get();

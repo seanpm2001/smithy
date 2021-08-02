@@ -537,7 +537,6 @@ public final class SmithyIdlModelSerializer {
                     // The default and enumValue traits are serialized using the assignment syntactic sugar.
                     .filter(trait -> !(trait instanceof DefaultTrait) && !(trait instanceof EnumValueTrait))
                     .filter(traitFilter)
-                    .filter(memberTraitFilter)
                     .sorted(Comparator.comparing(Trait::toShapeId))
                     .forEach(this::serializeTrait);
         }
