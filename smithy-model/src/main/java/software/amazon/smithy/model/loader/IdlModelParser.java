@@ -749,6 +749,7 @@ final class IdlModelParser extends SimpleParser {
         ws();
 
         do {
+            clearPendingDocs();
             String target = ParserUtils.parseShapeId(this);
             modelFile.addForwardReference(target, resolved -> modelFile.addPendingMixin(id, resolved));
             ws();
@@ -884,6 +885,7 @@ final class IdlModelParser extends SimpleParser {
     private void parseServiceStatement(ShapeId id, SourceLocation location) {
         parseMixins(id);
         ws();
+        parseMixins(id);
         ServiceShape.Builder builder = new ServiceShape.Builder().id(id).source(location);
         ObjectNode shapeNode = IdlNodeParser.parseObjectNode(this, id.toString());
         LoaderUtils.checkForAdditionalProperties(shapeNode, id, SERVICE_PROPERTY_NAMES, modelFile.events());
@@ -914,6 +916,7 @@ final class IdlModelParser extends SimpleParser {
     private void parseResourceStatement(ShapeId id, SourceLocation location) {
         parseMixins(id);
         ws();
+        parseMixins(id);
         ResourceShape.Builder builder = ResourceShape.builder().id(id).source(location);
         modelFile.onShape(builder);
         ObjectNode shapeNode = IdlNodeParser.parseObjectNode(this, id.toString());
