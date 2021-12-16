@@ -128,6 +128,7 @@ public class NullableIndex implements KnowledgeIndex {
             return true;
         }
 
+        Shape container = m.expectShape(member.getContainer());
         switch (container.getType()) {
             case STRUCTURE:
                 // Structure members are nullable by default; non-null when marked as @default / @required.
