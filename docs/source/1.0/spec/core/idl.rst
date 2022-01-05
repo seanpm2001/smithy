@@ -46,7 +46,8 @@ The following example defines a model file with each section:
             use smithy.other.namespace#MyString
 
             structure MyStructure {
-                foo: MyString!
+                @required
+                foo: MyString
             }
 
     .. code-tab:: json
@@ -1048,7 +1049,7 @@ Traits can be applied to structure members:
 
             /// This is documentation for `baz`.
             @deprecated
-            baz: Integer
+            baz: Integer,
         }
 
     .. code-tab:: json
@@ -1062,7 +1063,8 @@ Traits can be applied to structure members:
                         "foo": {
                             "target": "smithy.api#String",
                             "traits": {
-                                "smithy.api#documentation": "This is documentation for `foo`."
+                                "smithy.api#documentation": "This is documentation for `foo`.",
+                                "smithy.api#required": {}
                             }
                         },
                         "baz": {
@@ -1680,11 +1682,12 @@ members.
 
     @documentation("An animal in the animal kingdom")
     structure Animal {
-        name: smithy.api#String!
+        @required
+        name: smithy.api#String,
 
         @length(min: 0)
         @tags(["private-beta"])
-        age: smithy.api#Integer
+        age: smithy.api#Integer,
     }
 
 
@@ -1706,8 +1709,8 @@ Nested structure, map, and union values are defined using
 
     @structuredTrait(
         foo: {
-            bar: "baz"
-            qux: "true"
+            bar: "baz",
+            qux: "true",
         }
     )
 

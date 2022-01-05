@@ -388,7 +388,6 @@ public final class SmithyIdlModelSerializer {
      * Serializes shapes in the IDL format.
      */
     private static final class ShapeSerializer extends ShapeVisitor.Default<Void> {
-        private static final Predicate<Trait> OMIT_REQUIRED = trait -> !trait.toShapeId().equals(RequiredTrait.ID);
         private final SmithyCodeWriter codeWriter;
         private final NodeSerializer nodeSerializer;
         private final Predicate<Trait> traitFilter;
