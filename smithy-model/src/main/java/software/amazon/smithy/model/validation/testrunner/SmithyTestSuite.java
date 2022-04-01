@@ -15,7 +15,9 @@
 
 package software.amazon.smithy.model.validation.testrunner;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.loader.ModelAssembler;
+import software.amazon.smithy.utils.SmithyUnstableApi;
 
 /**
  * Runs test cases against a directory of models and error files.
@@ -57,7 +60,7 @@ public final class SmithyTestSuite {
     }
 
     /**
-     * Factory method used to easily created a JUnit 5 {@code ParameterizedTest}
+     * Factory method used to easily create a JUnit 5 {@code ParameterizedTest}
      * {@code MethodSource} based on the given {@code Class}.
      *
      * <p>This method assumes that there is a resource named {@code errorfiles}
@@ -105,6 +108,42 @@ public final class SmithyTestSuite {
                 .setModelAssemblerFactory(assembler::copy)
                 .addTestCasesFromUrl(contextClass.getResource(DEFAULT_TEST_CASE_LOCATION))
                 .parameterizedTestSource();
+    }
+
+
+    /**
+     * Factory method used to easily create a JUnit 5 errorfile {@code Test} case to operate on a single file
+     * with similar behavior to {@link #defaultParameterizedTestSource(Class)}. Useful for debugging, especially
+     * through CLI executed tests.
+     *
+     * <pre>{@code
+     * import java.net.util.MalformedURLException;
+     * import java.util.concurrent.Callable;
+     * import software.amazon.smithy.model.validation.testrunner.SmithyTestCase;
+     * import software.amazon.smithy.model.validation.testrunner.SmithyTestSuite;
+     *
+     * public class TestSingleFileRunner {
+     *     \@Test
+     *     public void testSingleFile() throws MalformedURLException {
+     *         SmithyTestSuite.singleFileTestSource("src/test/resources/software/amazon/smithy/model/errorfiles/"
+     *             + "model-under-test.smithy", ErrorsFileTest.class);
+     *     }
+     * }
+     * }</pre>
+     *
+     * @param path File location of the model file to run errorsfile test validation on.
+     * @param contextClass The class to use for loading errorfiles and model discovery.
+     * @return Returns the Result of running the test case.
+     * @throws MalformedURLException {@see java.net.URI#toURL()}
+     */
+    @SmithyUnstableApi
+    public static Result singleFileTestSource(String path, Class<?> contextClass) throws MalformedURLException {
+        ClassLoader classLoader = contextClass.getClassLoader();
+        ModelAssembler assembler = Model.assembler(classLoader).discoverModels(classLoader);
+        return SmithyTestSuite.runner()
+                .setModelAssemblerFactory(assembler::copy)
+                .addTestCasesFromUrl(new File(path).toURI().toURL())
+                .run();
     }
 
     private Stream<Object[]> parameterizedTestSource() {

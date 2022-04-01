@@ -15,6 +15,8 @@
 
 package software.amazon.smithy.model.validation.validators;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,9 +37,31 @@ public final class ResourceIdentifierValidator extends AbstractValidator {
 
     @Override
     public List<ValidationEvent> validate(Model model) {
-        return model.shapes(ResourceShape.class)
+        List<ValidationEvent> events = model.shapes(ResourceShape.class)
                 .flatMap(resource -> validateAgainstChildren(resource, model))
                 .collect(Collectors.toList());
+        for (ResourceShape resource : model.getResourceShapes()) {
+            events.addAll(validatePropertyRedefine(resource, model));
+        }
+        return events;
+    }
+
+    private List<ValidationEvent> validatePropertyRedefine(ResourceShape resource, Model model) {
+        List<ValidationEvent> events = new LinkedList<>();
+        if (resource.hasProperties()) {
+            Map<String, String> propertyLowerCaseToActual = new HashMap<>();
+            for (String propertyName : resource.getProperties().keySet()) {
+                propertyLowerCaseToActual.put(propertyName.toLowerCase(), propertyName);
+            }
+
+            for (String identifier : resource.getIdentifiers().keySet()) {
+                if (propertyLowerCaseToActual.containsKey(identifier.toLowerCase())) {
+                   events.add(error(resource, String.format("Resource identifier `%s` cannot also be a"
+                           + " resource property", identifier)));
+                }
+            }
+        }
+        return events;
     }
 
     private Stream<ValidationEvent> validateAgainstChildren(ResourceShape resource, Model model) {

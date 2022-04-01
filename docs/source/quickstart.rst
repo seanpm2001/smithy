@@ -132,7 +132,7 @@ Defining resources
 ==================
 
 A resource is contained within a service or another resource. Resources have
-identifiers, operations, and any number of child resources.
+identifiers, properties, operations, and any number of child resources.
 
 .. code-block:: smithy
 
@@ -187,6 +187,28 @@ needed. Because there is only one forecast per city, no additional identifiers
 were added to the identifiers property that isn't present on the ``City``
 resource.
 
+The state of a resource is represented through its 
+:ref:`resource-properties <resource-properties>`. ``City`` contains coordinates
+specifyies the physical location, and ``Forecast`` has a chance of rain
+represented as a float. Lifecycle operation input and output members map to
+resource properties or identifiers, unless those members are annotated otherwise.
+
+.. code-block:: smithy
+
+    resource City {
+        identifiers: { cityId: CityId }
+        properties: { coordinates: CityCoordinates }
+        read: GetCity
+        list: ListCities
+        resources: [Forecast]
+    }
+
+    resource Forecast {
+        identifiers: { cityId: CityId }
+        properties: { chanceOfRain: Float }
+        read: GetForecast
+    }
+
 .. admonition:: Review
     :class: tip
 
@@ -195,6 +217,9 @@ resource.
     2. Resources can define identifiers.
     3. Child resources must define the same identifiers as their parents,
        and they can also define additional identifiers.
+    4. Resources can define properties.
+    5. Resource properties are set, modified, or read through lifecycle
+       operations.
 
 
 Defining operations

@@ -201,6 +201,47 @@ structure service {
     endpointPrefix: String
 }
 
+/// Annotates a service as having tagging on 1 or more resources and associated
+/// APIs to perform CRUD operations on those tags
+@trait(selector: "service")
+structure tagEnabled {}
+
+    /// Points to an operation designated for a tagging APi
+@idRef(
+    failWhenMissing: true
+    selector: "resource > operation"
+)
+string TagOperationReference
+
+/// Indicates a resource supports CRUD operations for tags. Either through
+/// resource lifecycle or instance operations or tagging operations on the
+/// service.
+@trait(selector: "resource")
+structure taggable {
+    /// The `property` property is a string value that identifies which
+    /// resource property represents tags for the resource.
+    property: String
+
+    /// The `tagApi` property is a string value that references a non-instance
+    /// or create operation that creates or updates tags on the resource.
+    /// Default value is 'TagResource.'
+    tagApi: TagOperationReference
+
+    /// The `untagApi` property is a string value that references a non-lifecycle
+    /// operation that removes tags on the resource. Default value is
+    /// 'UntagResource.'
+    untagApi: TagOperationReference
+
+    /// The `listTagsApi` property is a string value that references a non-
+    /// instance operation which gets the current tags on the resource.
+    /// Default value is 'ListTagsForResource.'
+    listTagsApi: TagOperationReference
+
+    /// Flag indicating whether or not the resource is able to carry AWS
+    /// system level tags. Used by service principals. Default value is `true`
+    supportsSystemTags: Boolean
+}
+
 /// A string representing a service's ARN namespace.
 @pattern("^[a-z0-9.\\-]{1,63}$")
 @private

@@ -191,6 +191,291 @@ to call ``CreateTable`` on a table that already exists will return an error.
         }
 
 
+.. smithy-trait:: smithy.api#notProperty
+.. _notproperty-trait:
+
+---------------------
+``notProperty`` trait
+---------------------
+
+Summary
+    Used to explicitly mark a top-level input or output shape member of an
+    instance operation is not bound to a resource property. Can also mark
+    another trait to have same effect.
+Trait selector
+    ``:is(operation -[input, output]-> structure > member, [trait|trait])``
+
+    *A top-level member of an operation's input or output shape, or a trait*
+Value type
+    Annotation trait.
+
+By default, top-level input and output members of lifecycle operations must
+be bound to a resource property or identifier. Members that are neither, must
+have this trait applied, or be annotated with a different trait that has this
+trait applied.
+
+.. tabs::
+
+    .. code-tab:: smithy
+
+        resource Forecast {
+            properties: { chanceOfRain: Float }
+            update: UpdateForecast
+        }
+
+        operation UpdateForecast {
+           input: UpdateForecastInput
+        }
+
+        structure UpdateForecastInput {
+            chanceOfRain: Float
+
+            @notProperty
+            dryRun: Boolean
+
+            @idempotencyToken
+            clientToken: String
+        }
+
+    .. code-tab:: json
+
+        {
+            "smithy": "2.0",
+            "shapes": {
+                "smithy.example#Forecast": {
+                    "type": "resource",
+                    "update": {
+                        "target": "smithy.example#UpdateForecast"
+                    }
+                },
+                "smithy.example#UpdateForecast": {
+                    "type": "operation",
+                    "input": {
+                        "target": "smithy.example#UpdateForecastInput"
+                    },
+                    "output": {
+                        "target": "smithy.api#Unit"
+                    },
+                },
+                "smithy.example#UpdateForecastInput": {
+                    "type": "structure",
+                    "members": {
+                        "chanceOfRain": {
+                            "target": "smithy.api#Float"
+                        },
+                        "dryRun": {
+                            "target": "smithy.api#Boolean",
+                            "traits": {
+                                "smithy.api#notProperty": {}
+                            }
+                        },
+                        "clientToken": {
+                            "target": "smithy.api#String",
+                            "traits": {
+                                "smithy.api#idempotencyToken": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+.. smithy-trait:: smithy.api#property
+.. _property-trait:
+
+------------------
+``property`` trait
+------------------
+
+Summary
+    Binds a top-level input or output shape member of a structure to a resource
+    property with a different name.
+Trait selector
+    ``:is(operation -[input, output]-> structure > member)``
+
+    *A top-level member of an operation's input or output shape*
+Value type
+    An object with the following properties:
+
+    .. list-table::
+       :header-rows: 1
+       :widths: 10 23 67
+
+       * - Property
+         - Type
+         - Description
+       * - name
+         - ``string``
+         - Name of the resource property to bind the member to. This field MUST
+           be specified.
+
+By default, top-level input or output shape members are bound to the resource
+property with the same name. In situations where this isn't possible, this
+trait can be used to specify which property the member is bound to.
+
+   .. admonition:: Note
+    :class: tip
+
+    This trait should only be used for existing service APIs that need to
+    maintain backwards compatibility with input and output structures, while
+    enabling Smithy's resource property modeling and validation.
+
+.. tabs::
+
+    .. code-tab:: smithy
+
+        resource Forecast {
+            properties: { chanceOfRain: Float }
+            read: GetForecast
+        }
+
+        @readonly
+        operation GetForecast {
+           output: GetForecastOutput
+        }
+
+        structure GetForecastOutput {
+            @property(name: "chanceOfRain")
+            howLikelyToRain: Float
+        }
+
+    .. code-tab:: json
+
+        {
+            "smithy": "2.0",
+            "shapes": {
+                "smithy.example#Forecast": {
+                    "type": "resource",
+                    "read": {
+                        "target": "smithy.example#GetForecast"
+                    }
+                },
+                "smithy.example#GetForecast": {
+                    "type": "operation",
+                    "input": {
+                        "target": "smithy.api#Unit"
+                    },
+                    "output": {
+                        "target": "smithy.example#GetForecastOutput"
+                    },
+                    "traits": {
+                        "smithy.api#readonly": {}
+                    }
+                },
+                "smithy.example#GetForecastOutput": {
+                    "type": "structure",
+                    "members": {
+                        "howLikelyToRain": {
+                            "target": "smithy.api#Float",
+                            "traits": {
+                                "smithy.api#property": {
+                                    "name": "chanceOfRain"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+.. smithy-trait:: smithy.api#nestedProperties
+.. _nested-properties-trait:
+
+--------------------------
+``nestedProperties`` trait
+--------------------------
+
+Summary
+    Allows the binding of resource properties to occur with a members nested
+    deeper than the lifecycle operation's input or output shape.
+Trait selector
+    ``:is(operation -[input, output]-> structure > member)``
+
+    *A member of a top-level input or output structure member*
+Value type
+    Annotation trait.
+
+By default, top-level input and output shape members of lifecycle operations are
+bound to resource properties. If the shape containing the top-level resource
+properties is nested one level deeper than the input and output shape members,
+apply this trait to that member.
+
+.. tabs::
+
+    .. code-tab:: smithy
+
+        resource Forecast {
+            properties: { chanceOfRain: Float }
+            read: GetForecast
+        }
+
+        @readonly
+        operation GetForecast {
+           output: GetForecastOutput
+        }
+
+        structure GetForecastOutput {
+            @nestedProperties
+            forecastData: ForecastData
+        }
+
+        structure ForecastData {
+            chanceOfRain: Float
+        }
+
+    .. code-tab:: json
+
+        {
+            "smithy": "2.0",
+            "shapes": {
+                "smithy.example#Forecast": {
+                    "type": "resource",
+                    "read": {
+                        "target": "smithy.example#GetForecast"
+                    }
+                },
+                "smithy.example#ForecastData": {
+                    "type": "structure",
+                    "members": {
+                        "chanceOfRain": {
+                            "target": "smithy.api#Float"
+                        }
+                    }
+                },
+                "smithy.example#GetForecast": {
+                    "type": "operation",
+                    "input": {
+                        "target": "smithy.api#Unit"
+                    },
+                    "output": {
+                        "target": "smithy.example#GetForecastOutput"
+                    },
+                    "traits": {
+                        "smithy.api#readonly": {}
+                    }
+                },
+                "smithy.example#GetForecastOutput": {
+                    "type": "structure",
+                    "members": {
+                        "forecastData": {
+                            "target": "smithy.example#ForecastData",
+                            "traits": {
+                                "smithy.api#nestedProperties": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+The shape targetted by the member marked with this trait will have its members
+used for resource property bindings. These members may not use
+:ref:`property-trait`, or :ref:`notProperty-trait`, and Smithy will not perform
+any resource property binding exclusion , or bindings with mismatched property names.
+
+
 .. smithy-trait:: smithy.api#references
 .. _references-trait:
 
