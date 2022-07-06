@@ -72,6 +72,9 @@ Introduced and changed validation:
   with the `@notProperty` trait.
 * Defined resource properties that do not resolve to any top-level input or
   output members are invalid.
+* `@nestedProperties` trait pushes down the alignment of top-level properties
+  to a member target shape from the top-level input or output shape. Members
+  of the target shape can not use `@notProperty`.
 * Members that provide a value for a resource property but use a different
   target shape are invalid.
 * Members marked with a `@property` trait using a `name` that does not map to a
