@@ -41,8 +41,8 @@ public final class TagResourcePropertyTypeValidator extends AbstractValidator {
                 if (propertyShapeId != null) {
                     Shape propertyShape = model.expectShape(propertyShapeId);
                     if (!TaggingShapeUtils.verifyTagsShape(model, propertyShape)) {
-                        events.add(error(resource, "Tag property does not target a TagList or Map shape "
-                                + "with string value."));
+                        events.add(error(resource, "Tag property must be a list shape targetting a member"
+                                + " containing a pair of strings, or a Map shape targetting a string member."));
                     }
                 }
             }

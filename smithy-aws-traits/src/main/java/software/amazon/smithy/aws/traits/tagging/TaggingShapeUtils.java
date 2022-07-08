@@ -129,9 +129,7 @@ final class TaggingShapeUtils {
     static boolean verifyTagKeysShape(Model model, Shape tagShape) {
         // A list or set that targets a string shape qualifies as listing tag keys
         return (tagShape.isListShape()
-                    && model.expectShape(tagShape.asListShape().get().getMember().getTarget()).isStringShape())
-                || (tagShape.isSetShape()
-                    && model.expectShape(tagShape.asSetShape().get().getMember().getTarget()).isStringShape());
+                    && model.expectShape(tagShape.asListShape().get().getMember().getTarget()).isStringShape());
     }
 
     static boolean verifyTagResourceOperation(Model model,
