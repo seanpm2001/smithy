@@ -108,7 +108,7 @@ final class TaggingShapeUtils {
                 if (memberStructureShape.members().size() == 2) {
                     boolean allStrings = true;
                     for (MemberShape member : memberStructureShape.members()) {
-                        allStrings |= model.expectShape(member.getTarget()).isStringShape();
+                        allStrings &= model.expectShape(member.getTarget()).isStringShape();
                     }
                     return allStrings;
                 }
