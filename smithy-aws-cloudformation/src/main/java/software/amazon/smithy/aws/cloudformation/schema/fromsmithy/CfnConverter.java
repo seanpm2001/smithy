@@ -27,11 +27,13 @@ import software.amazon.smithy.aws.cloudformation.schema.CfnConfig;
 import software.amazon.smithy.aws.cloudformation.schema.CfnException;
 import software.amazon.smithy.aws.cloudformation.schema.model.Property;
 import software.amazon.smithy.aws.cloudformation.schema.model.ResourceSchema;
+import software.amazon.smithy.aws.cloudformation.schema.model.Tagging;
 import software.amazon.smithy.aws.cloudformation.traits.CfnNameTrait;
 import software.amazon.smithy.aws.cloudformation.traits.CfnResource;
 import software.amazon.smithy.aws.cloudformation.traits.CfnResourceIndex;
 import software.amazon.smithy.aws.cloudformation.traits.CfnResourceTrait;
 import software.amazon.smithy.aws.traits.ServiceTrait;
+import software.amazon.smithy.aws.traits.tagging.TaggableTrait;
 import software.amazon.smithy.jsonschema.JsonSchemaConverter;
 import software.amazon.smithy.jsonschema.JsonSchemaMapper;
 import software.amazon.smithy.jsonschema.PropertyNamingStrategy;
@@ -301,6 +303,15 @@ public final class CfnConverter {
             builder.addDefinition(definitionName, definition.getValue());
         }
 
+        if (resourceShape.hasTrait(TaggableTrait.class)) {
+            builder.tagging(Tagging.builder()
+                    .setTaggable(true)
+                    .setTagOnCreate(true)
+                    .setTagUpdatable(false)
+                    .setTagProperty("Tags")
+                    .build());
+        }
+
         // Apply all the mappers' after methods.
         ResourceSchema resourceSchema = builder.build();
         for (CfnMapper mapper : environment.mappers) {
@@ -372,6 +383,18 @@ public final class CfnConverter {
                 builder.addMember(name, definition.getShapeId());
             }
         });
+
+        if (resource.hasTrait(TaggableTrait.class)) {
+            TaggableTrait trait = resource.expectTrait(TaggableTrait.class);
+            if (!trait.getProperty().isPresent() || !cfnResource.getProperties()
+                    .containsKey(trait.getProperty().get())) {
+                if (trait.getProperty().isPresent()) {
+                    ShapeId definition = resource.getProperties().get(trait.getProperty().get());
+                    builder.addMember(trait.getProperty().get(), definition);
+                }
+            }
+        }
+
         return builder.build();
     }
 }
