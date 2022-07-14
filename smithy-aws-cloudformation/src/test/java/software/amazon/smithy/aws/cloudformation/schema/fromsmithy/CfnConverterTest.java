@@ -20,13 +20,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.FileWriter;
-import java.io.StringWriter;
 import java.util.Map;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.aws.cloudformation.schema.CfnConfig;
@@ -36,7 +30,6 @@ import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.utils.IoUtils;
 import software.amazon.smithy.utils.ListUtils;
-import sun.jvm.hotspot.oops.LocalVariableTableElement;
 
 public class CfnConverterTest {
 
@@ -154,18 +147,16 @@ public class CfnConverterTest {
         assertEquals(1, result.keySet().size());
         result.keySet().contains("Smithy::Weather::City");
 
-        try (FileWriter fileWriter = new FileWriter("/home/ANT.AMAZON.COM/ogudavid/cfn_resource.json")) {
-            fileWriter.write(Node.prettyPrintJson(result.get("Smithy::Weather::City")));
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Node expectedNode = Node.parse(IoUtils.toUtf8String(
+                getClass().getResourceAsStream("weather.cfn.json")));
+
+        Node.assertEquals(result.get("Smithy::Weather::City"), expectedNode);
     }
 
     @Test
     public void resourcePropertiesWithTagsServiceWideTest() {
         Model model = Model.assembler()
-                .addImport(CfnConverterTest.class.getResource("weather.smithy"))
+                .addImport(CfnConverterTest.class.getResource("weather-service-wide.smithy"))
                 .addImport(CfnConverterTest.class.getResource("tagging.smithy"))
                 .discoverModels()
                 .assemble()
@@ -178,12 +169,10 @@ public class CfnConverterTest {
                 .convertToNodes(model);
         assertEquals(1, result.keySet().size());
         result.keySet().contains("Smithy::Weather::City");
+ 
+        Node expectedNode = Node.parse(IoUtils.toUtf8String(
+                getClass().getResourceAsStream("weather-service-wide.cfn.json")));
 
-        try (FileWriter fileWriter = new FileWriter("/home/ANT.AMAZON.COM/ogudavid/cfn_resource.json")) {
-            fileWriter.write(Node.prettyPrintJson(result.get("Smithy::Weather::City")));
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Node.assertEquals(result.get("Smithy::Weather::City"), expectedNode);
      }
 }

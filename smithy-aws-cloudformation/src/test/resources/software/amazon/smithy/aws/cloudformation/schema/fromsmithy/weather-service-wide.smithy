@@ -13,43 +13,11 @@ use aws.api#tagEnabled
 service Weather {
     version: "2006-03-01",
     resources: [City]
-    operations: [GetCurrentTime]
-}
-
-operation TagCity {
-    input := {
-        @required
-        cityId: CityId
-        @length(max: 128)
-        tags: example.tagging#TagList
-    }
-    output := { }
-}
-
-operation UntagCity {
-    input := {
-        @required
-        cityId: CityId
-        @required
-        @notProperty
-        tagKeys: example.tagging#TagKeys
-    }
-    output := { }
-}
-
-operation ListTagsForCity {
-    input := {
-        @required
-        cityId: CityId
-    }
-    output := { 
-        @length(max: 128)
-        tags: example.tagging#TagList
-    }
+    operations: [GetCurrentTime, example.tagging#TagResource, example.tagging#UntagResource, example.tagging#ListTagsForResource]
 }
 
 @cfnResource
-@taggable()
+@taggable
 resource City {
     identifiers: { cityId: CityId },
     properties: {
@@ -60,8 +28,7 @@ resource City {
     read: GetCity,
     update: UpdateCity
     list: ListCities,
-    operations: [TagCity, UntagCity, ListTagsForCity],
-    resources: [Forecast],
+    resources: [Forecast]
 }
 
 operation CreateCity {
