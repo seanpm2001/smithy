@@ -30,7 +30,6 @@ import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.everit.json.schema.loader.SchemaLoader.SchemaLoaderBuilder;
-import org.everit.json.schema.loader.internal.DefaultSchemaClient;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.junit.jupiter.api.BeforeAll;
