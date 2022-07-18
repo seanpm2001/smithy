@@ -614,7 +614,7 @@ string pattern
 @trait(selector: "structure > member")
 structure required {}
 
-/// Configures a structure member's resource property mapping behavior
+/// Configures a structure member's resource property mapping behavior.
 @trait(
     selector: "structure > member",
     conflicts: [resourceIdentifier],
