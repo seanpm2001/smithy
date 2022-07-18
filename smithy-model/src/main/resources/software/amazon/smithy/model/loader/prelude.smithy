@@ -632,7 +632,7 @@ structure property {
 )
 structure notProperty {}
 
-/// Adjusts the resource property mapping of a lifecycle operation to the targeted member
+/// Adjusts the resource property mapping of a lifecycle operation to the targeted member.
 @trait(
     selector: ":is(operation -[input, output]-> structure > member)"
     structurallyExclusive: "member"
