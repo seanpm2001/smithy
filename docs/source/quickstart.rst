@@ -188,7 +188,7 @@ were added to the identifiers property that isn't present on the ``City``
 resource.
 
 The state of a resource is represented through its 
-:ref:`resource-properties <resource-properties>`. ``City`` contains coordinates
+:ref:-properties <resource-properties>`. ``City`` contains coordinates,
 specifyies the physical location, and ``Forecast`` has a chance of rain
 represented as a float. Lifecycle operation input and output members map to
 resource properties or identifiers, unless those members are annotated otherwise.
