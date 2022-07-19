@@ -190,8 +190,8 @@ resource.
 The state of a resource is represented through its 
 :ref:-properties <resource-properties>`. ``City`` contains coordinates,
 and ``Forecast`` has a chance of rain
-represented as a float. Lifecycle operation input and output members map to
-resource properties or identifiers, unless those members are annotated otherwise.
+represented as a float. Input and output members of resource lifecycle map
+to resource properties or identifiers.
 
 .. code-block:: smithy
 

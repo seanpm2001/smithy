@@ -1049,7 +1049,7 @@ Traits can be applied to structure members:
 
             /// This is documentation for `baz`.
             @deprecated
-            baz: Integer,
+            baz: Integer
         }
 
     .. code-tab:: json

@@ -214,71 +214,26 @@ be bound to a resource property or identifier. Members that are neither, must
 have this trait applied, or be annotated with a different trait that has this
 trait applied.
 
-.. tabs::
+.. code-block:: smithy
 
-    .. code-tab:: smithy
+    resource Forecast {
+        properties: { chanceOfRain: Float }
+        update: UpdateForecast
+    }
 
-        resource Forecast {
-            properties: { chanceOfRain: Float }
-            update: UpdateForecast
-        }
+    operation UpdateForecast {
+       input: UpdateForecastInput
+    }
 
-        operation UpdateForecast {
-           input: UpdateForecastInput
-        }
+    structure UpdateForecastInput {
+        chanceOfRain: Float
 
-        structure UpdateForecastInput {
-            chanceOfRain: Float
+        @notProperty
+        dryRun: Boolean
 
-            @notProperty
-            dryRun: Boolean
-
-            @idempotencyToken
-            clientToken: String
-        }
-
-    .. code-tab:: json
-
-        {
-            "smithy": "2.0",
-            "shapes": {
-                "smithy.example#Forecast": {
-                    "type": "resource",
-                    "update": {
-                        "target": "smithy.example#UpdateForecast"
-                    }
-                },
-                "smithy.example#UpdateForecast": {
-                    "type": "operation",
-                    "input": {
-                        "target": "smithy.example#UpdateForecastInput"
-                    },
-                    "output": {
-                        "target": "smithy.api#Unit"
-                    },
-                },
-                "smithy.example#UpdateForecastInput": {
-                    "type": "structure",
-                    "members": {
-                        "chanceOfRain": {
-                            "target": "smithy.api#Float"
-                        },
-                        "dryRun": {
-                            "target": "smithy.api#Boolean",
-                            "traits": {
-                                "smithy.api#notProperty": {}
-                            }
-                        },
-                        "clientToken": {
-                            "target": "smithy.api#String",
-                            "traits": {
-                                "smithy.api#idempotencyToken": {}
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        @idempotencyToken
+        clientToken: String
+    }
 
 
 .. smithy-trait:: smithy.api#property
@@ -321,63 +276,22 @@ trait can be used to specify which property the member is bound to.
     maintain backwards compatibility with input and output structures, while
     enabling Smithy's resource property modeling and validation.
 
-.. tabs::
+.. code-tab:: smithy
 
-    .. code-tab:: smithy
+    resource Forecast {
+        properties: { chanceOfRain: Float }
+        read: GetForecast
+    }
 
-        resource Forecast {
-            properties: { chanceOfRain: Float }
-            read: GetForecast
-        }
+    @readonly
+    operation GetForecast {
+       output: GetForecastOutput
+    }
 
-        @readonly
-        operation GetForecast {
-           output: GetForecastOutput
-        }
-
-        structure GetForecastOutput {
-            @property(name: "chanceOfRain")
-            howLikelyToRain: Float
-        }
-
-    .. code-tab:: json
-
-        {
-            "smithy": "2.0",
-            "shapes": {
-                "smithy.example#Forecast": {
-                    "type": "resource",
-                    "read": {
-                        "target": "smithy.example#GetForecast"
-                    }
-                },
-                "smithy.example#GetForecast": {
-                    "type": "operation",
-                    "input": {
-                        "target": "smithy.api#Unit"
-                    },
-                    "output": {
-                        "target": "smithy.example#GetForecastOutput"
-                    },
-                    "traits": {
-                        "smithy.api#readonly": {}
-                    }
-                },
-                "smithy.example#GetForecastOutput": {
-                    "type": "structure",
-                    "members": {
-                        "howLikelyToRain": {
-                            "target": "smithy.api#Float",
-                            "traits": {
-                                "smithy.api#property": {
-                                    "name": "chanceOfRain"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    structure GetForecastOutput {
+        @property(name: "chanceOfRain")
+        howLikelyToRain: Float
+    }
 
 
 .. smithy-trait:: smithy.api#nestedProperties
@@ -402,73 +316,26 @@ bound to resource properties. If the shape containing the top-level resource
 properties is nested one level deeper than the input and output shape members,
 apply this trait to that member.
 
-.. tabs::
+.. code-block:: smithy
 
-    .. code-tab:: smithy
+    resource Forecast {
+        properties: { chanceOfRain: Float }
+        read: GetForecast
+    }
 
-        resource Forecast {
-            properties: { chanceOfRain: Float }
-            read: GetForecast
-        }
+    @readonly
+    operation GetForecast {
+       output: GetForecastOutput
+    }
 
-        @readonly
-        operation GetForecast {
-           output: GetForecastOutput
-        }
+    structure GetForecastOutput {
+        @nestedProperties
+        forecastData: ForecastData
+    }
 
-        structure GetForecastOutput {
-            @nestedProperties
-            forecastData: ForecastData
-        }
-
-        structure ForecastData {
-            chanceOfRain: Float
-        }
-
-    .. code-tab:: json
-
-        {
-            "smithy": "2.0",
-            "shapes": {
-                "smithy.example#Forecast": {
-                    "type": "resource",
-                    "read": {
-                        "target": "smithy.example#GetForecast"
-                    }
-                },
-                "smithy.example#ForecastData": {
-                    "type": "structure",
-                    "members": {
-                        "chanceOfRain": {
-                            "target": "smithy.api#Float"
-                        }
-                    }
-                },
-                "smithy.example#GetForecast": {
-                    "type": "operation",
-                    "input": {
-                        "target": "smithy.api#Unit"
-                    },
-                    "output": {
-                        "target": "smithy.example#GetForecastOutput"
-                    },
-                    "traits": {
-                        "smithy.api#readonly": {}
-                    }
-                },
-                "smithy.example#GetForecastOutput": {
-                    "type": "structure",
-                    "members": {
-                        "forecastData": {
-                            "target": "smithy.example#ForecastData",
-                            "traits": {
-                                "smithy.api#nestedProperties": {}
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    structure ForecastData {
+        chanceOfRain: Float
+    }
 
 The shape targetted by the member marked with this trait will have its members
 used for resource property bindings. These members may not use
@@ -603,7 +470,7 @@ The following example defines several references:
 
 .. tabs::
 
-    .. code-tab:: smithy
+    .. code-block:: smithy
 
         @references([
             {resource: Forecast}
