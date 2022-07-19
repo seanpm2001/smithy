@@ -53,9 +53,12 @@ public class ResourceShapeTest {
     public void maintainsProperties() {
         Map<String, ShapeId> properties = new TreeMap<>();
         properties.put("fooProperty", ShapeId.from("ns.foo#Shape"));
-        ResourceShape shape = ResourceShape.builder().id("ns.foo#Bar")
+        ResourceShape.Builder builder = ResourceShape.builder();
+        ResourceShape shape = builder.id("ns.foo#Bar")
             .properties(properties)
             .build();
         assertEquals(shape.getProperties(), properties);
+        // Verify that toBuilder() works as well.
+        assertEquals(properties, shape.toBuilder().build().getProperties());
     }
 }

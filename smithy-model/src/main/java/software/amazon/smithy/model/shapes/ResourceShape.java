@@ -87,6 +87,7 @@ public final class ResourceShape extends EntityShape implements ToSmithyBuilder<
     public Builder toBuilder() {
         Builder builder = updateBuilder(builder())
                 .identifiers(getIdentifiers())
+                .properties(properties)
                 .put(put)
                 .create(create)
                 .read(read)

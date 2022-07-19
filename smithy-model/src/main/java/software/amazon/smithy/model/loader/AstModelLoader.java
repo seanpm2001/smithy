@@ -54,7 +54,9 @@ import software.amazon.smithy.model.shapes.StructureShape;
 import software.amazon.smithy.model.shapes.TimestampShape;
 import software.amazon.smithy.model.shapes.UnionShape;
 import software.amazon.smithy.model.traits.TraitFactory;
+import software.amazon.smithy.model.validation.Severity;
 import software.amazon.smithy.model.validation.ValidationEvent;
+import software.amazon.smithy.model.validation.Validator;
 import software.amazon.smithy.utils.ListUtils;
 import software.amazon.smithy.utils.SetUtils;
 
@@ -296,6 +298,15 @@ enum AstModelLoader {
 
         // Load properties and resolve forward references.
         node.getObjectMember("properties").ifPresent(properties -> {
+            if (!modelFile.getVersion().supportsResourceProperties()) {
+                modelFile.events().add(ValidationEvent.builder()
+                        .sourceLocation(properties.getSourceLocation())
+                        .id(Validator.MODEL_ERROR)
+                        .severity(Severity.WARNING)
+                        .message("Resource properties can only be used with Smithy version 2 or later. "
+                        + "Attempted to use resource properties with version `" + modelFile.getVersion() + "`.")
+                        .build());
+            }
             for (Map.Entry<StringNode, Node> entry : properties.getMembers().entrySet()) {
                 String name = entry.getKey().getValue();
                 ShapeId target = loadReferenceBody(modelFile, id, entry.getValue());
