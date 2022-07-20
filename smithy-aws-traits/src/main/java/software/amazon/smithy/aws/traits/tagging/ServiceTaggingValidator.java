@@ -47,7 +47,6 @@ public final class ServiceTaggingValidator extends AbstractValidator {
         List<ValidationEvent> events = new LinkedList<>();
         SourceLocation tagEnabledTraitLoc = service.expectTrait(TagEnabledTrait.class).getSourceLocation();
 
-
         Optional<ShapeId> tagResourceId = awsTagIndex.getTagResourceOperation(service.getId());
         if (tagResourceId.isPresent()) {
             if (!awsTagIndex.serviceHasValidTagResourceOperation(service.getId())) {

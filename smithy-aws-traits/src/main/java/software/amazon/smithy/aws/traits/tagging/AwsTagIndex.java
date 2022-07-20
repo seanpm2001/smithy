@@ -33,6 +33,7 @@ import software.amazon.smithy.model.shapes.ResourceShape;
 import software.amazon.smithy.model.shapes.ServiceShape;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.shapes.StructureShape;
+import software.amazon.smithy.utils.SmithyInternalApi;
 
 /**
  * Index of AWS tagging trait information in a service closure and convenient
@@ -258,6 +259,7 @@ public final class AwsTagIndex implements KnowledgeIndex {
      * @param tagResourceOperation TagResource operation object to scan the input members of.
      * @return the matching input member if present. {@see java.util.Optional.empty()} otherwise.
      */
+    @SmithyInternalApi
     public static Optional<MemberShape> getTagsMember(Model model, OperationShape tagResourceOperation) {
         for (MemberShape memberShape : model.expectShape(tagResourceOperation.getInputShape(),
                 StructureShape.class).members()) {

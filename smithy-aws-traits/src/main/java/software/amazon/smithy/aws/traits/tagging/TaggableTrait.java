@@ -51,7 +51,6 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
      * Gets a boolean indicating whether or not the service supports the resource carrying system tags.
      *
      * @return Returns true if the service supports the resource carrying system tags.
-     *
      */
     public Optional<Boolean> getSupportsSystemTags() {
         return Optional.ofNullable(supportsSystemTags);
