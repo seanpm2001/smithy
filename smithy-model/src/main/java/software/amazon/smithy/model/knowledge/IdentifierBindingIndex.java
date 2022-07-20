@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -33,7 +32,6 @@ import software.amazon.smithy.model.shapes.ToShapeId;
 import software.amazon.smithy.model.traits.RequiredTrait;
 import software.amazon.smithy.model.traits.ResourceIdentifierTrait;
 import software.amazon.smithy.utils.Pair;
-import software.amazon.smithy.utils.SetUtils;
 
 /**
  * Index of operation shapes to the identifiers bound to the operation.
@@ -132,17 +130,6 @@ public final class IdentifierBindingIndex implements KnowledgeIndex {
         return getOperationInputBindings(resource, operation);
     }
 
-    /**
-     * Gets a set of identifier names associated with either input or output on the operation.
-     *
-     * @param resource Shape ID of a resource.
-     * @param operation Shape ID of an operation.
-     * @return Returns a set of all identifier names associated with the operation.
-     */
-    public Set<String> getAllOperationIdentifiers(ToShapeId resource, ToShapeId operation) {
-        return SetUtils.copyOf(allIdentifiers);
-    }
-
     private void processResource(ResourceShape resource, OperationIndex operationIndex, Model model) {
         inputBindings.put(resource.getId(), new HashMap<>());
         outputBindings.put(resource.getId(), new HashMap<>());
@@ -151,13 +138,13 @@ public final class IdentifierBindingIndex implements KnowledgeIndex {
             // Ignore broken models in this index.
             Map<String, String> computedInputBindings = operationIndex.getInputShape(operationId)
                     .map(inputShape -> computeBindings(resource, inputShape))
-                    .orElseGet(HashMap::new);
+                    .orElse(Collections.emptyMap());
             inputBindings.get(resource.getId()).put(operationId, computedInputBindings);
             allIdentifiers.addAll(computedInputBindings.keySet());
 
             Map<String, String> computedOutputBindings = operationIndex.getOutputShape(operationId)
                     .map(outputShape -> computeBindings(resource, outputShape))
-                    .orElseGet(HashMap::new);
+                    .orElse(Collections.emptyMap());
             outputBindings.get(resource.getId()).put(operationId, computedOutputBindings);
             allIdentifiers.addAll(computedOutputBindings.keySet());
 

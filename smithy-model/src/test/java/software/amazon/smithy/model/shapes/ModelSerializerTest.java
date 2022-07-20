@@ -248,10 +248,8 @@ public class ModelSerializerTest {
             .build();
         Model model = Model.builder().addShape(shape).build();
         Node node = ModelSerializer.builder().build().serialize(model);
-        NodeMapper nodeMapper = new NodeMapper();
-        Map<String, ShapeId> propertiesDeserialized = nodeMapper.deserializeMap(NodePointer
-                .parse("/shapes/example.weather#City/properties").getValue(node),
-                TreeMap.class, ShapeId.class);
-        assertEquals(properties, propertiesDeserialized);
+        Node expectedNode = Node.parse("{\"smithy\":\"2.0\",\"shapes\":{\"ns.foo#Bar\":" +
+                "{\"type\":\"resource\",\"properties\":{\"fooProperty\":{\"target\":\"ns.foo#Shape\"}}}}}");
+        Node.assertEquals(node, expectedNode);
     }
 }
