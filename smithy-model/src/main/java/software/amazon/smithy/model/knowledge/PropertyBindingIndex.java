@@ -66,7 +66,7 @@ public final class PropertyBindingIndex implements KnowledgeIndex {
                         memberShapeDoesNotRequireProperty.put(memberShape.toShapeId(),
                                 doesNotRequireProperty(memberShape));
                     }
-                    if (doesMemberShapeRequireProperty(memberShape.getId())
+                    if (doesMemberShapeRequireProperty(memberShape)
                             || propertyNames.contains(memberShape.getMemberName())) {
                         memberShapeToPropertyName.put(memberShape.getId(), getPropertyTraitName(memberShape)
                             .orElse(memberShape.getMemberName()));
@@ -90,7 +90,7 @@ public final class PropertyBindingIndex implements KnowledgeIndex {
                         memberShapeDoesNotRequireProperty.put(memberShape.toShapeId(),
                                 doesNotRequireProperty(memberShape));
                     }
-                    if (doesMemberShapeRequireProperty(memberShape.getId())
+                    if (doesMemberShapeRequireProperty(memberShape)
                             || propertyNames.contains(memberShape.getMemberName())) {
                         memberShapeToPropertyName.put(memberShape.getId(), getPropertyTraitName(memberShape)
                             .orElse(memberShape.getMemberName()));
@@ -127,11 +127,11 @@ public final class PropertyBindingIndex implements KnowledgeIndex {
      * {@see PropertyBindingIndex#getPropertyName(ShapeId)} will return a non-empty Optional if this method
      * returns true.
      *
-     * @param memberShapeId the ShapeId of the member shape to check
+     * @param memberShape the member shape to check
      * @return true if member shape maps to a property on the given resource
      */
-    public boolean isMemberShapeProperty(ShapeId memberShapeId) {
-        return memberShapeToPropertyName.containsKey(memberShapeId);
+    public boolean isMemberShapeProperty(MemberShape memberShape) {
+        return memberShapeToPropertyName.containsKey(memberShape.toShapeId());
     }
 
     /**
@@ -167,11 +167,11 @@ public final class PropertyBindingIndex implements KnowledgeIndex {
     /**
      * Returns true if member is required to have an associated property mapping.
      *
-     * @param memberShapeId the ShapeId of the member shape to check
+     * @param memberShape the member shape to check
      * @return True if input/output member is required to have a property mapping.
      */
-    public boolean doesMemberShapeRequireProperty(ShapeId memberShapeId) {
-        return !memberShapeDoesNotRequireProperty.getOrDefault(memberShapeId, false);
+    public boolean doesMemberShapeRequireProperty(MemberShape memberShape) {
+        return !memberShapeDoesNotRequireProperty.getOrDefault(memberShape.toShapeId(), false);
     }
 
     private Model getModel() {
@@ -180,8 +180,8 @@ public final class PropertyBindingIndex implements KnowledgeIndex {
 
     private Set<ShapeId> computeNotPropertyTraits() {
         Model model = getModel();
-        return model.shapes()
-            .filter(shape -> shape.hasTrait(NotPropertyTrait.class) && shape.hasTrait(TraitDefinition.class))
+        return model.getShapesWithTrait(NotPropertyTrait.class).stream()
+            .filter(shape -> shape.hasTrait(TraitDefinition.class))
             .map(shape -> shape.toShapeId())
             .collect(Collectors.toSet());
     }
@@ -197,10 +197,11 @@ public final class PropertyBindingIndex implements KnowledgeIndex {
 
     private Shape getPropertiesShape(Collection<MemberShape> members, Shape presumedShape) {
         Model model = getModel();
-        return members.stream()
-                .filter(member -> member.hasTrait(NestedPropertiesTrait.class))
-                .map(member -> model.expectShape(member.getTarget()))
-                .findAny()
-                    .orElse(presumedShape);
+        for (MemberShape member : members) {
+            if (member.hasTrait(NestedPropertiesTrait.class)) {
+                return model.expectShape(member.getTarget());
+            }
+        }
+        return presumedShape;
     }
 }

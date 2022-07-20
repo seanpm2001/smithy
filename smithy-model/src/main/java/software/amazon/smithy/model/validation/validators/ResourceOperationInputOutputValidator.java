@@ -107,12 +107,12 @@ public final class ResourceOperationInputOutputValidator extends AbstractValidat
     ) {
         List<String> properties = new ArrayList<>();
         for (MemberShape member : propertyBindingIndex.getInputPropertiesShape(operation).members()) {
-            if (propertyBindingIndex.isMemberShapeProperty(member.getId())) {
+            if (propertyBindingIndex.isMemberShapeProperty(member)) {
                 properties.add(propertyBindingIndex.getPropertyName(member.getId()).get());
             }
         }
         for (MemberShape member : propertyBindingIndex.getOutputPropertiesShape(operation).members()) {
-            if (propertyBindingIndex.isMemberShapeProperty(member.getId())) {
+            if (propertyBindingIndex.isMemberShapeProperty(member)) {
                 properties.add(propertyBindingIndex.getPropertyName(member.getId()).get());
             }
         }
@@ -151,7 +151,7 @@ public final class ResourceOperationInputOutputValidator extends AbstractValidat
 
         Shape shape = propertyBindingIndex.getOutputPropertiesShape(operation);
         for (MemberShape member : shape.members()) {
-            if (propertyBindingIndex.isMemberShapeProperty(member.getId())) {
+            if (propertyBindingIndex.isMemberShapeProperty(member)) {
                 validateMember(events, lifecycleOperationName, propertyBindingIndex, resource, member,
                         identifierMembers, properties, propertyToMemberMappings);
             }
@@ -176,7 +176,7 @@ public final class ResourceOperationInputOutputValidator extends AbstractValidat
 
         Shape shape = propertyBindingIndex.getInputPropertiesShape(operation);
         for (MemberShape member : shape.members()) {
-            if (propertyBindingIndex.isMemberShapeProperty(member.getId())) {
+            if (propertyBindingIndex.isMemberShapeProperty(member)) {
                 validateMember(events, lifecycleOperationName, propertyBindingIndex, resource, member,
                         identifierMembers, properties, propertyToMemberMappings);
             }

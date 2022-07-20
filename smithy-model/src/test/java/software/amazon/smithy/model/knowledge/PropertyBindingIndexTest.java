@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.Model;
+import software.amazon.smithy.model.shapes.MemberShape;
 import software.amazon.smithy.model.shapes.OperationShape;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.validation.ValidatedResult;
@@ -37,14 +38,21 @@ public class PropertyBindingIndexTest {
         Model model = vrmodel.getResult().get();
 
         PropertyBindingIndex index = PropertyBindingIndex.of(model);
-        assertFalse(index.doesMemberShapeRequireProperty(ShapeId.from("com.example#ResourceStructure_1$token")));
-        assertFalse(index.doesMemberShapeRequireProperty(ShapeId.from("com.example#ResourceStructure_1$id")));
-        assertFalse(index.doesMemberShapeRequireProperty(ShapeId.from("com.example#ResourceStructure_1$spurious")));
-        assertFalse(index.doesMemberShapeRequireProperty(ShapeId.from("com.example#ResourceStructure_2$nested")));
-        assertTrue(index.doesMemberShapeRequireProperty(ShapeId.from("com.example#ResourceStructure_1$property")));
+        assertFalse(index.doesMemberShapeRequireProperty(model.expectShape(
+                ShapeId.from("com.example#ResourceStructure_1$token"), MemberShape.class)));
+        assertFalse(index.doesMemberShapeRequireProperty(model.expectShape(
+                ShapeId.from("com.example#ResourceStructure_1$id"), MemberShape.class)));
+        assertFalse(index.doesMemberShapeRequireProperty(model.expectShape(
+                ShapeId.from("com.example#ResourceStructure_1$spurious"), MemberShape.class)));
+        assertFalse(index.doesMemberShapeRequireProperty(model.expectShape(
+                ShapeId.from("com.example#ResourceStructure_2$nested"), MemberShape.class)));
+        assertTrue(index.doesMemberShapeRequireProperty(model.expectShape(
+                ShapeId.from("com.example#ResourceStructure_1$property"), MemberShape.class)));
 
-        assertTrue(index.isMemberShapeProperty(ShapeId.from("com.example#ResourceStructure_1$property")));
-        assertFalse(index.isMemberShapeProperty(ShapeId.from("com.example#ResourceStructure_1$spurious")));
+        assertTrue(index.isMemberShapeProperty(model.expectShape(
+                ShapeId.from("com.example#ResourceStructure_1$property"), MemberShape.class)));
+        assertFalse(index.isMemberShapeProperty(model.expectShape(
+                ShapeId.from("com.example#ResourceStructure_1$spurious"), MemberShape.class)));
 
         assertTrue(index.getPropertyName(ShapeId.from("com.example#ResourceStructure_1$property")).isPresent());
         assertEquals("property", index.getPropertyName(ShapeId.from("com.example#ResourceStructure_1$property")).get());
@@ -58,7 +66,8 @@ public class PropertyBindingIndexTest {
         assertEquals(ShapeId.from("com.example#ResourceDescription"), index.getOutputPropertiesShape(get).getId());
         assertEquals(ShapeId.from("com.example#ResourceDescription"), index.getOutputPropertiesShape(update).getId());
 
-        assertTrue(index.doesMemberShapeRequireProperty(ShapeId.from("com.example#ChangeResourceOutput$id")));
+        assertTrue(index.doesMemberShapeRequireProperty(model.expectShape(
+                ShapeId.from("com.example#ChangeResourceOutput$id"), MemberShape.class)));
         Assertions.assertThrows(ValidatedResultException.class, () -> vrmodel.unwrap());
     }
 }

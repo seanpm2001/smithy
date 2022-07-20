@@ -81,7 +81,8 @@ public final class TaggableResourceValidator extends AbstractValidator {
                 || isTaggable;
 
         if (!isTaggable) {
-            events.add(error(resource, "Resource does not have available tag CRUD operations."));
+            events.add(error(resource, "Resource does not have tagging CRUD operations and is not compatible"
+                    + " with service-wide tagging operations."));
         }
 
         return events;

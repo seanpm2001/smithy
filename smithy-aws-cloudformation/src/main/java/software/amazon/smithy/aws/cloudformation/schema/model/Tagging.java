@@ -77,10 +77,10 @@ public final class Tagging implements ToSmithyBuilder<Tagging> {
     @Override
     public Builder toBuilder() {
         return builder()
-                .setTaggable(taggable)
-                .setTagOnCreate(tagOnCreate)
-                .setTagUpdatable(tagUpdatable)
-                .setTagProperty(tagProperty);
+                .taggable(taggable)
+                .tagOnCreate(tagOnCreate)
+                .tagUpdatable(tagUpdatable)
+                .tagProperty(tagProperty);
     }
 
     public static final class Builder implements SmithyBuilder<Tagging> {
@@ -94,22 +94,22 @@ public final class Tagging implements ToSmithyBuilder<Tagging> {
             return new Tagging(this);
         }
 
-        public Builder setTaggable(boolean taggable) {
+        public Builder taggable(boolean taggable) {
             this.taggable = taggable;
             return this;
         }
 
-        public Builder setTagOnCreate(boolean tagOnCreate) {
+        public Builder tagOnCreate(boolean tagOnCreate) {
             this.tagOnCreate = tagOnCreate;
             return this;
         }
 
-        public Builder setTagUpdatable(boolean tagUpdatable) {
+        public Builder tagUpdatable(boolean tagUpdatable) {
             this.tagUpdatable = tagUpdatable;
             return this;
         }
 
-        public Builder setTagProperty(String tagProperty) {
+        public Builder tagProperty(String tagProperty) {
             this.tagProperty = tagProperty;
             return this;
         }

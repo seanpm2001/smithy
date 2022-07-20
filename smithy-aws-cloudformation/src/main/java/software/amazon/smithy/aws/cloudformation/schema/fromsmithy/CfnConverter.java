@@ -308,11 +308,11 @@ public final class CfnConverter {
         if (resourceShape.hasTrait(TaggableTrait.class)) {
             AwsTagIndex tagsIndex = AwsTagIndex.of(environment.context.getModel());
             Tagging.Builder tagBuilder = Tagging.builder()
-                    .setTaggable(true)
-                    .setTagOnCreate(tagsIndex.isResourceTagOnCreate(resourceShape.getId()))
-                    .setTagProperty(getTagsProperty(resourceShape))
+                    .taggable(true)
+                    .tagOnCreate(tagsIndex.isResourceTagOnCreate(resourceShape.getId()))
+                    .tagProperty(getTagsProperty(resourceShape))
                     // Unless tag on create is supported, Smithy tagging means
-                    .setTagUpdatable(true);
+                    .tagUpdatable(true);
 
             builder.tagging(tagBuilder.build());
         }
@@ -396,7 +396,7 @@ public final class CfnConverter {
 
     private String getTagsProperty(ResourceShape resource) {
         return resource.getTrait(TaggableTrait.class)
-                .flatMap(trait -> trait.getProperty())
+                .flatMap(TaggableTrait::getProperty)
                 .map(property -> {
                     if (config.getDisableCapitalizedProperties()) {
                         return property;

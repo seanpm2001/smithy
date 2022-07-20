@@ -15,8 +15,8 @@
 
 package software.amazon.smithy.model.validation.validators;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +35,7 @@ public final class ResourceIdentifierValidator extends AbstractValidator {
 
     @Override
     public List<ValidationEvent> validate(Model model) {
-        List<ValidationEvent> events = new LinkedList<>();
+        List<ValidationEvent> events = new ArrayList<>();
         for (ResourceShape resource : model.getResourceShapes()) {
             events.addAll(validatePropertyRedefine(resource, model));
             events.addAll(validateAgainstChildren(resource, model));
@@ -44,7 +44,7 @@ public final class ResourceIdentifierValidator extends AbstractValidator {
     }
 
     private List<ValidationEvent> validatePropertyRedefine(ResourceShape resource, Model model) {
-        List<ValidationEvent> events = new LinkedList<>();
+        List<ValidationEvent> events = new ArrayList<>();
         if (resource.hasProperties()) {
             Map<String, String> propertyLowerCaseToActual = new HashMap<>();
             for (String propertyName : resource.getProperties().keySet()) {
@@ -62,7 +62,7 @@ public final class ResourceIdentifierValidator extends AbstractValidator {
     }
 
     private List<ValidationEvent> validateAgainstChildren(ResourceShape resource, Model model) {
-        List<ValidationEvent> events = new LinkedList<>();
+        List<ValidationEvent> events = new ArrayList<>();
         for (ShapeId childResourceId: resource.getResources()) {
             ResourceShape childResource = model.expectShape(childResourceId, ResourceShape.class);
             checkForMissing(childResource, resource).ifPresent(e -> events.add(e));
