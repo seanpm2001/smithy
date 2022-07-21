@@ -26,11 +26,13 @@ public final class Tagging implements ToSmithyBuilder<Tagging> {
     private final boolean tagOnCreate;
     private final boolean tagUpdatable;
     private final String tagProperty;
+    private final boolean cloudFormationSystemTags;
 
     private Tagging(Builder builder) {
         taggable = builder.taggable;
         tagOnCreate = builder.tagOnCreate;
         tagUpdatable = builder.tagUpdatable;
+        cloudFormationSystemTags = builder.cloudFormationSystemTags;
         tagProperty = builder.tagProperty;
     }
 
@@ -66,6 +68,15 @@ public final class Tagging implements ToSmithyBuilder<Tagging> {
     }
 
     /**
+     * Returns true if the resource supports CloudFormation system tags.
+     *
+     * @return true if the resource supports CloudFormation system tags.
+     */
+    public boolean getCloudFormationSystemTags() {
+        return cloudFormationSystemTags;
+    }
+
+    /**
      * Returns the name of the tag property.
      *
      * @return the name of the tag property.
@@ -80,6 +91,7 @@ public final class Tagging implements ToSmithyBuilder<Tagging> {
                 .taggable(taggable)
                 .tagOnCreate(tagOnCreate)
                 .tagUpdatable(tagUpdatable)
+                .cloudFormationSystemTags(cloudFormationSystemTags)
                 .tagProperty(tagProperty);
     }
 
@@ -87,6 +99,7 @@ public final class Tagging implements ToSmithyBuilder<Tagging> {
         private boolean taggable;
         private boolean tagOnCreate;
         private boolean tagUpdatable;
+        private boolean cloudFormationSystemTags;
         private String tagProperty;
 
         @Override
@@ -106,6 +119,11 @@ public final class Tagging implements ToSmithyBuilder<Tagging> {
 
         public Builder tagUpdatable(boolean tagUpdatable) {
             this.tagUpdatable = tagUpdatable;
+            return this;
+        }
+
+        public Builder cloudFormationSystemTags(boolean cloudFormationSystemTags) {
+            this.cloudFormationSystemTags = cloudFormationSystemTags;
             return this;
         }
 

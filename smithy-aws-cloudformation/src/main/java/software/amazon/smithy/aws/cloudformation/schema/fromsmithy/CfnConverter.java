@@ -307,11 +307,13 @@ public final class CfnConverter {
 
         if (resourceShape.hasTrait(TaggableTrait.class)) {
             AwsTagIndex tagsIndex = AwsTagIndex.of(environment.context.getModel());
+            TaggableTrait trait = resourceShape.expectTrait(TaggableTrait.class);
             Tagging.Builder tagBuilder = Tagging.builder()
                     .taggable(true)
                     .tagOnCreate(tagsIndex.isResourceTagOnCreate(resourceShape.getId()))
                     .tagProperty(getTagsProperty(resourceShape))
-                    // Unless tag on create is supported, Smithy tagging means
+                    .cloudFormationSystemTags(!trait.getDisableSystemTags())
+                    // Unless tag-on-create is supported, Smithy tagging means
                     .tagUpdatable(true);
 
             builder.tagging(tagBuilder.build());
