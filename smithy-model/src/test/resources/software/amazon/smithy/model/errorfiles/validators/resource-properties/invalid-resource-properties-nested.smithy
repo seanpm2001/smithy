@@ -21,6 +21,18 @@ resource Resource {
     create: AddResource
     update: UpdateResource
     delete: DeleteResource
+    operations: [SetTitle]
+}
+
+operation SetTitle {
+    input := {
+        @required
+        @resourceIdentifier("productId")
+        id: Identifier
+        @nestedProperties
+        title: Title
+    }
+    output := {}
 }
 
 structure ResourceDescription {

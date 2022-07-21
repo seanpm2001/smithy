@@ -29,6 +29,7 @@ import software.amazon.smithy.model.shapes.OperationShape;
 import software.amazon.smithy.model.shapes.ResourceShape;
 import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
+import software.amazon.smithy.model.shapes.StructureShape;
 import software.amazon.smithy.model.traits.NestedPropertiesTrait;
 import software.amazon.smithy.model.traits.NotPropertyTrait;
 import software.amazon.smithy.model.traits.PropertyTrait;
@@ -145,10 +146,10 @@ public final class PropertyBindingIndex implements KnowledgeIndex {
      * @return the output shape of an operation that contains top-level resource
      *  properties.
      */
-    public Shape getOutputPropertiesShape(OperationShape operation) {
+    public StructureShape getOutputPropertiesShape(OperationShape operation) {
         Model model = getModel();
         return getPropertiesShape(operationIndex.getOutputMembers(operation).values(),
-                model.expectShape(operation.getOutputShape()));
+                model.expectShape(operation.getOutputShape(), StructureShape.class));
     }
 
     /**
@@ -160,10 +161,10 @@ public final class PropertyBindingIndex implements KnowledgeIndex {
      * @return the input shape of an operation that contains top-level resource
      *  properties.
      */
-    public Shape getInputPropertiesShape(OperationShape operation) {
+    public StructureShape getInputPropertiesShape(OperationShape operation) {
         Model model = getModel();
         return getPropertiesShape(operationIndex.getInputMembers(operation).values(),
-                model.expectShape(operation.getInputShape()));
+                model.expectShape(operation.getInputShape(), StructureShape.class));
     }
 
     /**
@@ -197,11 +198,14 @@ public final class PropertyBindingIndex implements KnowledgeIndex {
             || notPropertyMetaTraitSet.stream().anyMatch(traitId -> memberShape.hasTrait(traitId));
     }
 
-    private Shape getPropertiesShape(Collection<MemberShape> members, Shape presumedShape) {
+    private StructureShape getPropertiesShape(Collection<MemberShape> members, StructureShape presumedShape) {
         Model model = getModel();
         for (MemberShape member : members) {
-            if (member.hasTrait(NestedPropertiesTrait.class)) {
-                return model.expectShape(member.getTarget());
+            if (member.hasTrait(NestedPropertiesTrait.class))  {
+                Shape shape = model.expectShape(member.getTarget());
+                if (shape.isStructureShape())    {
+                    return shape.asStructureShape().get();
+                }
             }
         }
         return presumedShape;
