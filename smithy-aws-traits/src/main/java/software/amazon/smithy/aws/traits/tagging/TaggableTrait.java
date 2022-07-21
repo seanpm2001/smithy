@@ -24,7 +24,6 @@ import software.amazon.smithy.model.traits.AbstractTrait;
 import software.amazon.smithy.model.traits.AbstractTraitBuilder;
 import software.amazon.smithy.model.traits.TraitService;
 import software.amazon.smithy.utils.MapUtils;
-import software.amazon.smithy.utils.SmithyBuilder;
 import software.amazon.smithy.utils.ToSmithyBuilder;
 
 /**
@@ -107,7 +106,7 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
     }
 
     @Override
-    public SmithyBuilder<TaggableTrait> toBuilder() {
+    public Builder toBuilder() {
         return builder()
                 .property(property)
                 .tagApi(tagApi)

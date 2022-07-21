@@ -2160,57 +2160,24 @@ least one instance operation's input or output.
 For example, the following model defines a ``Forecast`` resource with a
 single property ``chanceOfRain`` read by the GetForecast operation, and
 
-.. tabs::
+.. code-block:: smithy
 
-    .. code-tab:: smithy
+    $version: "2.0"
+    namespace smithy.example
 
-        $version: "2.0"
-        namespace smithy.example
+    resource Forecast {
+        properties: { chanceOfRain: Float }
+        read: GetForecast
+    }
 
-        resource Forecast {
-            properties: { chanceOfRain: Float }
-            read: GetForecast
-        }
+    @readonly
+    operation GetForecast {
+       output: GetForecastOutput
+    }
 
-        @readonly
-        operation GetForecast {
-           output: GetForecastOutput
-        }
-
-        structure GetForecastOutput {
-            chanceOfRain: Float
-        }
-
-    .. code-tab:: json
-
-        {
-            "smithy": "2.0",
-            "shapes": {
-                "smithy.example#Forecast": {
-                    "type": "resource",
-                    "read": {
-                        "target": "smithy.example#GetForecast"
-                    }
-                },
-                "smithy.example#GetForecast": {
-                    "type": "operation",
-                    "output": {
-                        "target": "smithy.example#GetForecastOutput"
-                    },
-                    "traits": {
-                        "smithy.api#readonly": {}
-                    }
-                },
-                "smithy.example#GetForecastOutput": {
-                    "type": "structure",
-                    "members": {
-                        "chanceOfRain": {
-                            "target": "smithy.api#Float"
-                        }
-                    },
-                }
-            }
-        }
+    structure GetForecastOutput {
+        chanceOfRain: Float
+    }
 
 .. _binding-properties:
 

@@ -33,10 +33,12 @@ import software.amazon.smithy.model.traits.NestedPropertiesTrait;
 import software.amazon.smithy.model.traits.NotPropertyTrait;
 import software.amazon.smithy.model.traits.PropertyTrait;
 import software.amazon.smithy.model.traits.TraitDefinition;
+import software.amazon.smithy.utils.SmithyUnstableApi;
 
 /**
  * Index of member shape to associated resource property information.
  */
+@SmithyUnstableApi
 public final class PropertyBindingIndex implements KnowledgeIndex {
     private final WeakReference<Model> model;
     private final OperationIndex operationIndex;
