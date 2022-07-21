@@ -243,7 +243,7 @@ structure taggable {
     listTagsApi: TagOperationReference
 
     /// Flag indicating if the resource is not able to carry AWS system level.
-    /// Used by service principals. Default value is `true`
+    /// Used by service principals. Default value is `false`
     disableSystemTags: Boolean
 }
 
