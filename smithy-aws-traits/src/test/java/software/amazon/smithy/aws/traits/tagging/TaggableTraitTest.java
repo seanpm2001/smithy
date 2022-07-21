@@ -39,7 +39,7 @@ public class TaggableTraitTest {
         objectNodeBuilder.withMember("tagApi", "ns.qux#TagIt");
         objectNodeBuilder.withMember("untagApi", "ns.qux#Untag");
         objectNodeBuilder.withMember("listTagsApi", "ns.qux#ListTags");
-        objectNodeBuilder.withMember("supportsSystemTags", false);
+        objectNodeBuilder.withMember("disableSystemTags", true);
         ObjectNode objectNode = objectNodeBuilder.build();
         Optional<Trait> trait = provider.createTrait(ShapeId.from("aws.api#taggable"),
             ShapeId.from("ns.qux#foo"), objectNode);
@@ -53,7 +53,7 @@ public class TaggableTraitTest {
         assertEquals(ShapeId.from("ns.qux#TagIt"), taggableTrait.getTagApi().get());
         assertEquals(ShapeId.from("ns.qux#Untag"), taggableTrait.getUntagApi().get());
         assertEquals(ShapeId.from("ns.qux#ListTags"), taggableTrait.getListTagsApi().get());
-        assertFalse(taggableTrait.getSupportsSystemTags().get());
+        assertTrue(taggableTrait.getDisableSystemTags());
 
         assertThat(taggableTrait.toNode(), equalTo(objectNode));
         assertThat(taggableTrait.toBuilder().build(), equalTo(taggableTrait));
@@ -74,8 +74,7 @@ public class TaggableTraitTest {
         assertEquals(Optional.empty(), taggableTrait.getTagApi());
         assertEquals(Optional.empty(), taggableTrait.getUntagApi());
         assertEquals(Optional.empty(), taggableTrait.getListTagsApi());
-        assertEquals(Optional.empty(), taggableTrait.getSupportsSystemTags());
+        assertEquals(false, taggableTrait.getDisableSystemTags());
         assertThat(taggableTrait.toNode(), equalTo(objectNode));
-        assertThat(taggableTrait.toBuilder().build(), equalTo(taggableTrait));
     }
 }

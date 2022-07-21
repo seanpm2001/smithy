@@ -207,8 +207,7 @@ structure service {
 structure tagEnabled {
     /// The `disableDefaultOperations` property is a boolean value that specifies
     /// if the service does not have the standard tag operations supporting all
-    /// resources on the service.
-    /// Default value is false
+    /// resources on the service. Default value is `false`
     disableDefaultOperations: Boolean
 }
 
@@ -243,9 +242,9 @@ structure taggable {
     /// Default value is 'ListTagsForResource.'
     listTagsApi: TagOperationReference
 
-    /// Flag indicating whether or not the resource is able to carry AWS
-    /// system level tags. Used by service principals. Default value is `true`
-    supportsSystemTags: Boolean
+    /// Flag indicating if the resource is not able to carry AWS system level.
+    /// Used by service principals. Default value is `true`
+    disableSystemTags: Boolean
 }
 
 /// A string representing a service's ARN namespace.

@@ -35,7 +35,7 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
     private final ShapeId tagApi;
     private final ShapeId untagApi;
     private final ShapeId listTagsApi;
-    private final Boolean supportsSystemTags;
+    private final boolean disableSystemTags;
 
     private TaggableTrait(Builder builder) {
         super(ID, builder.getSourceLocation());
@@ -43,16 +43,16 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
         tagApi = builder.tagApi;
         untagApi = builder.untagApi;
         listTagsApi = builder.listTagsApi;
-        supportsSystemTags = builder.supportsSystemTags;
+        disableSystemTags = builder.disableSystemTags;
     }
 
     /**
      * Gets a boolean indicating whether or not the service supports the resource carrying system tags.
      *
-     * @return Returns true if the service supports the resource carrying system tags.
+     * @return Returns true if the service does not support the resource carrying system tags.
      */
-    public Optional<Boolean> getSupportsSystemTags() {
-        return Optional.ofNullable(supportsSystemTags);
+    public boolean getDisableSystemTags() {
+        return disableSystemTags;
     }
 
     /**
@@ -98,7 +98,7 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
                 .withOptionalMember("tagApi", getTagApi().map(id -> Node.from(id.toString())))
                 .withOptionalMember("untagApi", getUntagApi().map(id -> Node.from(id.toString())))
                 .withOptionalMember("listTagsApi", getListTagsApi().map(id -> Node.from(id.toString())))
-                .withOptionalMember("supportsSystemTags", getSupportsSystemTags().map(Node::from));
+                .withMember("disableSystemTags", getDisableSystemTags());
     }
 
     public static Builder builder() {
@@ -112,7 +112,7 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
                 .tagApi(tagApi)
                 .untagApi(untagApi)
                 .listTagsApi(listTagsApi)
-                .supportsSystemTags(supportsSystemTags)
+                .disableSystemTags(disableSystemTags)
                 .sourceLocation(getSourceLocation());
     }
 
@@ -121,7 +121,7 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
         private ShapeId tagApi;
         private ShapeId untagApi;
         private ShapeId listTagsApi;
-        private Boolean supportsSystemTags;
+        private boolean disableSystemTags = false;
 
         public Builder property(String property) {
             this.property = property;
@@ -143,8 +143,8 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
             return this;
         }
 
-        public Builder supportsSystemTags(Boolean supportsSystemTags) {
-            this.supportsSystemTags = supportsSystemTags;
+        public Builder disableSystemTags(Boolean disableSystemTags) {
+            this.disableSystemTags = disableSystemTags;
             return this;
         }
 
