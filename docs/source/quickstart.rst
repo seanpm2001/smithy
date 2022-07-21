@@ -199,14 +199,21 @@ to resource properties or identifiers.
         identifiers: { cityId: CityId }
         properties: { coordinates: CityCoordinates }
         read: GetCity
-        list: ListCities
         resources: [Forecast]
+    }
+
+    structure GetCityOutput for City {
+        $coordinates
     }
 
     resource Forecast {
         identifiers: { cityId: CityId }
         properties: { chanceOfRain: Float }
         read: GetForecast
+    }
+
+    structure GetForecastOutput for Forecast {
+        $chanceOfRain
     }
 
 .. admonition:: Review
