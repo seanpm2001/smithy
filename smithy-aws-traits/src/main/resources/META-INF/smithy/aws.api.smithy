@@ -204,7 +204,13 @@ structure service {
 /// Annotates a service as having tagging on 1 or more resources and associated
 /// APIs to perform CRUD operations on those tags
 @trait(selector: "service")
-structure tagEnabled {}
+structure tagEnabled {
+    /// The `disableDefaultOperations` property is a boolean value that specifies
+    /// if the service does not have the standard tag operations supporting all
+    /// resources on the service.
+    /// Default value is false
+    disableDefaultOperations: Boolean
+}
 
     /// Points to an operation designated for a tagging APi
 @idRef(
