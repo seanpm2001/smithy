@@ -2240,7 +2240,7 @@ name and property name by default.
             }
         }
 
-The:ref:`property-trait` can be used, while specifying the `name` property, to
+The `name` property of the :ref:`property-trait` is used to
 bind a member to the named property. This is useful if the member name cannot
 changed due to backwards compatibility reasons, but resource property modeling
 is being added to your Smithy model.
