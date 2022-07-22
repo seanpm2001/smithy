@@ -1996,7 +1996,7 @@ of an operation provide values for the identifiers of a resource.
 
 - Child resources MUST provide identifier bindings for all of its parent's
   identifiers.
-- Identifier bindings are formed on input or output structure members that are
+- Identifier bindings may be formed on input or output structure members that are
   marked as :ref:`required <required-trait>`.
 - Resource operations MUST form a valid *instance operation* or
   *collection operation*.
@@ -2158,7 +2158,8 @@ delete, and put. All declared resource properties MUST appear in at
 least one instance operation's input or output.
 
 For example, the following model defines a ``Forecast`` resource with a
-single property ``chanceOfRain`` read by the GetForecast operation, and
+single property ``chanceOfRain`` read by the GetForecast operation, and the
+output operation shape ``GetForecastOutput`` contains that output property.
 
 .. code-block:: smithy
 
@@ -2175,20 +2176,20 @@ single property ``chanceOfRain`` read by the GetForecast operation, and
        output: GetForecastOutput
     }
 
-    structure GetForecastOutput {
+    structure GetForecastOutput{
         chanceOfRain: Float
     }
 
 .. _binding-properties:
 
 Binding members to properties
----------------------------------
+-----------------------------
 
 *Property bindings* associate top-level members of input or output shapes
 with resource properties. The match occurs through a match between member
 name and property name by default.
 
-.. code-tab:: smithy
+.. code-block:: smithy
 
     $version: "2.0"
     namespace smithy.example
@@ -2215,7 +2216,7 @@ is being added to your Smithy model.
 The following example demonstrates the ``howLikelyToRain`` member of
 ``GetForecastOutput`` can be bound to the ``chanceOfRain`` resource property:
 
-.. code-tab:: smithy
+.. code-block:: smithy
 
     resource Forecast {
         properties: { chanceOfRain: Float }

@@ -276,7 +276,7 @@ trait can be used to specify which property the member is bound to.
     maintain backwards compatibility with input and output structures, while
     enabling Smithy's resource property modeling and validation.
 
-.. code-tab:: smithy
+.. code-block:: smithy
 
     resource Forecast {
         properties: { chanceOfRain: Float }
@@ -470,7 +470,7 @@ The following example defines several references:
 
 .. tabs::
 
-    .. code-block:: smithy
+    .. code-tab:: smithy
 
         @references([
             {resource: Forecast}
