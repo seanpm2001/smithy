@@ -2204,8 +2204,8 @@ name and property name by default.
        output: GetForecastOutput
     }
 
-    structure GetForecastOutput {
-        chanceOfRain: Float
+    structure GetForecastOutput for Forecast {
+        $chanceOfRain
     }
 
 The:ref:`property-trait` can be used, while specifying the `name` property, to

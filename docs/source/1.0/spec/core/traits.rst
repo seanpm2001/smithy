@@ -269,7 +269,7 @@ By default, top-level input or output shape members are bound to the resource
 property with the same name. In situations where this isn't possible, this
 trait can be used to specify which property the member is bound to.
 
-   .. admonition:: Note
+    .. admonition:: Note
     :class: tip
 
     This trait should only be used for existing service APIs that need to
@@ -305,7 +305,7 @@ Summary
     Allows the binding of resource properties to occur with a members nested
     deeper than the lifecycle operation's input or output shape.
 Trait selector
-    ``:is(operation -[input, output]-> structure > member)``
+    ``:is(operation -[input, output]-> structure > member :test(> structure)``
 
     *A member of a top-level input or output structure member*
 Value type
