@@ -2188,57 +2188,24 @@ Binding members to properties
 with resource properties. The match occurs through a match between member
 name and property name by default.
 
-.. tabs::
+.. code-tab:: smithy
 
-    .. code-tab:: smithy
+    $version: "2.0"
+    namespace smithy.example
 
-        $version: "2.0"
-        namespace smithy.example
+    resource Forecast {
+        properties: { chanceOfRain: Float }
+        read: GetForecast
+    }
 
-        resource Forecast {
-            properties: { chanceOfRain: Float }
-            read: GetForecast
-        }
+    @readonly
+    operation GetForecast {
+       output: GetForecastOutput
+    }
 
-        @readonly
-        operation GetForecast {
-           output: GetForecastOutput
-        }
-
-        structure GetForecastOutput {
-            chanceOfRain: Float
-        }
-
-    .. code-tab:: json
-
-        {
-            "smithy": "2.0",
-            "shapes": {
-                "smithy.example#Forecast": {
-                    "type": "resource",
-                    "read": {
-                        "target": "smithy.example#GetForecast"
-                    }
-                },
-                "smithy.example#GetForecast": {
-                    "type": "operation",
-                    "output": {
-                        "target": "smithy.example#GetForecastOutput"
-                    },
-                    "traits": {
-                        "smithy.api#readonly": {}
-                    }
-                },
-                "smithy.example#GetForecastOutput": {
-                    "type": "structure",
-                    "members": {
-                        "chanceOfRain": {
-                            "target": "smithy.api#Float"
-                        }
-                    },
-                }
-            }
-        }
+    structure GetForecastOutput {
+        chanceOfRain: Float
+    }
 
 The:ref:`property-trait` can be used, while specifying the `name` property, to
 bind a member to the named property. This is useful if the member name cannot
@@ -2248,63 +2215,22 @@ is being added to your Smithy model.
 The following example demonstrates the ``howLikelyToRain`` member of
 ``GetForecastOutput`` can be bound to the ``chanceOfRain`` resource property:
 
-.. tabs::
+.. code-tab:: smithy
 
-    .. code-tab:: smithy
+    resource Forecast {
+        properties: { chanceOfRain: Float }
+        read: GetForecast
+    }
 
-        resource Forecast {
-            properties: { chanceOfRain: Float }
-            read: GetForecast
-        }
+    @readonly
+    operation GetForecast {
+       output: GetForecastOutput
+    }
 
-        @readonly
-        operation GetForecast {
-           output: GetForecastOutput
-        }
-
-        structure GetForecastOutput {
-            @property(name: "chanceOfRain")
-            howLikelyToRain: Float
-        }
-
-    .. code-tab:: json
-
-        {
-            "smithy": "2.0",
-            "shapes": {
-                "smithy.example#Forecast": {
-                    "type": "resource",
-                    "read": {
-                        "target": "smithy.example#GetForecast"
-                    }
-                },
-                "smithy.example#GetForecast": {
-                    "type": "operation",
-                    "input": {
-                        "target": "smithy.api#Unit"
-                    },
-                    "output": {
-                        "target": "smithy.example#GetForecastOutput"
-                    },
-                    "traits": {
-                        "smithy.api#readonly": {}
-                    }
-                },
-                "smithy.example#GetForecastOutput": {
-                    "type": "structure",
-                    "members": {
-                        "howLikelyToRain": {
-                            "target": "smithy.api#Float",
-                            "traits": {
-                                "smithy.api#property": {
-                                    "name": "chanceOfRain"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    structure GetForecastOutput {
+        @property(name: "chanceOfRain")
+        howLikelyToRain: Float
+    }
 
 .. rubric:: Resource property binding validation
 
