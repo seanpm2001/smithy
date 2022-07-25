@@ -68,7 +68,6 @@ resource Forecast {
 }
 
 @taggable
-@arn(template: "city/{CityId}")
 resource City {
     identifiers: { cityId: CityId }
     properties: {

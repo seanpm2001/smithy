@@ -84,6 +84,11 @@ public final class TaggableResourceValidator extends AbstractValidator {
         boolean isInstanceOpTaggable = isTaggableViaInstanceOperations(events, model, resource, service,
                 propertyBindingIndex);
 
+        if (isServiceWideTaggable && !isInstanceOpTaggable && !resource.hasTrait(ArnTrait.class)) {
+            events.add(error(resource, "Resource is taggable only via service-wide tag operations."
+                    + " It must use the `aws.api@arn` trait."));
+        }
+
         if (!(isServiceWideTaggable || isInstanceOpTaggable)) {
             events.add(error(resource, "Resource does not have tagging CRUD operations and is not compatible"
                     + " with service-wide tagging operations."));

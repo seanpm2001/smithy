@@ -3,6 +3,7 @@ $version: "2.0"
 namespace example.weather
 
 use aws.cloudformation#cfnResource
+use aws.api#arn
 use aws.api#taggable
 use aws.api#tagEnabled
 
@@ -18,6 +19,7 @@ service Weather {
 
 @cfnResource
 @taggable
+@arn(template: "city/{CityId}")
 resource City {
     identifiers: { cityId: CityId },
     properties: {
