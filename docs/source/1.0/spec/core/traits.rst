@@ -332,9 +332,15 @@ apply this trait to that member.
         forecastData: ForecastData
     }
 
-    structure ForecastData {
-        chanceOfRain: Float
+    structure ForecastData for Forecast {
+        $chanceOfRain
     }
+
+.. seealso::
+
+    The :ref:`target elision syntax <idl-target-elision>` for an easy way to
+    define structures that reference resource properties without having to
+    repeat the target definition.
 
 The shape targetted by the member marked with this trait will have its members
 used for resource property bindings. These members may not use

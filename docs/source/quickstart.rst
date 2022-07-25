@@ -228,6 +228,12 @@ to resource properties or identifiers.
     5. Resource properties are set, modified, or read through lifecycle
        operations.
 
+.. seealso::
+
+    The :ref:`target elision syntax <idl-target-elision>` for an easy way to
+    define structures that reference resource properties without having to
+    repeat the target definition.
+
 
 Defining operations
 ===================
