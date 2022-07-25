@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import software.amazon.smithy.aws.traits.ArnTrait;
 import software.amazon.smithy.model.Model;
 import software.amazon.smithy.model.knowledge.PropertyBindingIndex;
 import software.amazon.smithy.model.knowledge.TopDownIndex;
@@ -48,6 +49,10 @@ public final class TaggableResourceValidator extends AbstractValidator {
             for (ResourceShape resource : topDownIndex.getContainedResources(service)) {
                 if (resource.hasTrait(TaggableTrait.class)) {
                     events.addAll(validateResource(model, resource, service, tagIndex, propertyBindingIndex));
+                } else if (resource.hasTrait(ArnTrait.class) && tagIndex.serviceHasTagApis(service.getId())) {
+                    // If a resource does not have the taggable trait, but has an ARN, and the service has tag
+                    // operations, it is most likely a mistake.
+                    events.add(warning(resource, "Resource is likely missing `aws.api#taggable` trait."));
                 }
             }
         }

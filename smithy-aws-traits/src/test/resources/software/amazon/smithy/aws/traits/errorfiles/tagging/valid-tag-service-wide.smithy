@@ -2,6 +2,7 @@ $version: "2.0"
 
 namespace example.weather
 
+use aws.api#arn
 use aws.api#taggable
 use aws.api#tagEnabled
 
@@ -56,23 +57,37 @@ operation ListTagsForResource {
     }
 }
 
+@arn(
+    template: "city/{cityId}/forecast/{forecastId}"
+)
+resource Forecast {
+    identifiers: { 
+        cityId: CityId
+        forecastId: ForecastId
+    }
+}
+
 @taggable
 resource City {
-    identifiers: { cityId: CityId },
+    identifiers: { cityId: CityId }
     properties: {
         name: String
         coordinates: CityCoordinates
     }
-    read: GetCity,
+    read: GetCity
+    resources: [Forecast]
 }
+
+@pattern("^[A-Za-z0-9 ]+$")
+string ForecastId
 
 @pattern("^[A-Za-z0-9 ]+$")
 string CityId
 
 @readonly
 operation GetCity {
-    input: GetCityInput,
-    output: GetCityOutput,
+    input: GetCityInput
+    output: GetCityOutput
     errors: [NoSuchResource]
 }
 
@@ -92,7 +107,7 @@ structure GetCityOutput {
     name: String,
 
     @required
-    coordinates: CityCoordinates,
+    coordinates: CityCoordinates
 }
 
 // This structure is nested within GetCityOutput.
@@ -114,7 +129,7 @@ structure NoSuchResource {
 
 @readonly
 operation GetCurrentTime {
-    input: GetCurrentTimeInput,
+    input: GetCurrentTimeInput
     output: GetCurrentTimeOutput
 }
 

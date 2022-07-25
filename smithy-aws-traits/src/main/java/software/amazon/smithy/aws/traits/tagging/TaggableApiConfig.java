@@ -43,7 +43,7 @@ public final class TaggableApiConfig implements FromSourceLocation, ToNode, ToSm
     }
 
     /**
-     * Creates a builder used to build an IntegrationResponse.
+     * Creates a builder used to build an TaggableApiConfig.
      *
      * @return Returns the created builder.
      */
