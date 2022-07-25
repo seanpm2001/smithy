@@ -5,7 +5,7 @@ namespace example.weather
 use aws.api#taggable
 use aws.api#tagEnabled
 
-@tagEnabled
+@tagEnabled(disableDefaultOperations: true)
 service Weather {
     version: "2006-03-01",
     resources: [City]
