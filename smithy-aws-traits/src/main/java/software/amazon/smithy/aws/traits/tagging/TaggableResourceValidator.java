@@ -74,13 +74,12 @@ public final class TaggableResourceValidator extends AbstractValidator {
         //    list or tag keys input or output member
         // 2. Tagging via APIs specified in the @taggable trait which are validated
         //    through the tag property, and must be resource instance operations
-        boolean isTaggable = false;
         //Caution: avoid short circuiting behavior.
-        isTaggable = awsTagIndex.serviceHasTagApis(service.getId()) || isTaggable;
-        isTaggable = isTaggableViaInstanceOperations(events, model, resource, service, propertyBindingIndex)
-                || isTaggable;
+        boolean isServiceWideTaggable = awsTagIndex.serviceHasTagApis(service.getId());
+        boolean isInstanceOpTaggable = isTaggableViaInstanceOperations(events, model, resource, service,
+                propertyBindingIndex);
 
-        if (!isTaggable) {
+        if (!(isServiceWideTaggable || isInstanceOpTaggable)) {
             events.add(error(resource, "Resource does not have tagging CRUD operations and is not compatible"
                     + " with service-wide tagging operations."));
         }

@@ -262,18 +262,7 @@ Value type
          - Description
        * - name
          - ``string``
-         - Name of the resource property to bind the member to.
-       * - tagApi 
-         - :ref:`shape-id`
-         - Reference to the instance operation that creates and modifies tags
-           on the resource.
-       * - untagApi 
-         - :ref:`shape-id`
-         - Reference to the instance operation that removes tags on the resource.
-       * - listTagsApi 
-         - :ref:`shape-id`
-         - Reference to the instance operation that retrieves all tags on the
-           resource.
+         - **Required** Name of the resource property to bind the member to.
 
 By default, top-level input or output shape members are bound to the resource
 property with the same name. In situations where this isn't possible, this

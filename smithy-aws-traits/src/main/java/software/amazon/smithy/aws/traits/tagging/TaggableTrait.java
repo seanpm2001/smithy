@@ -17,7 +17,6 @@ package software.amazon.smithy.aws.traits.tagging;
 
 import java.util.Optional;
 import software.amazon.smithy.model.node.Node;
-import software.amazon.smithy.model.node.NodeMapper;
 import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.model.shapes.ShapeId;
 import software.amazon.smithy.model.traits.AbstractTrait;
@@ -124,7 +123,6 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
 
         @Override
         public TaggableTrait createTrait(ShapeId target, Node value) {
-            NodeMapper nodeMapper = new NodeMapper();
             TaggableTrait.Builder builder = TaggableTrait.builder();
             ObjectNode valueObjectNode = value.expectObjectNode();
             if (valueObjectNode.containsMember("property")) {
