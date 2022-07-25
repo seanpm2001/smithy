@@ -16,11 +16,11 @@
 package software.amazon.smithy.aws.traits.tagging;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
+
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import software.amazon.smithy.model.node.Node;
@@ -36,9 +36,12 @@ public class TaggableTraitTest {
         TraitFactory provider = TraitFactory.createServiceFactory();
         Builder objectNodeBuilder = Node.objectNodeBuilder();
         objectNodeBuilder.withMember("property", "propertyName");
-        objectNodeBuilder.withMember("tagApi", "ns.qux#TagIt");
-        objectNodeBuilder.withMember("untagApi", "ns.qux#Untag");
-        objectNodeBuilder.withMember("listTagsApi", "ns.qux#ListTags");
+        TaggableApiConfig.Builder apiConfigNodeBuilder = TaggableApiConfig.builder();
+        apiConfigNodeBuilder.tagApi(ShapeId.from("ns.qux#TagIt"));
+        apiConfigNodeBuilder.untagApi(ShapeId.from("ns.qux#Untag"));
+        apiConfigNodeBuilder.listTagsApi(ShapeId.from("ns.qux#ListTags"));
+        TaggableApiConfig apiConfig = apiConfigNodeBuilder.build();
+        objectNodeBuilder.withOptionalMember("apiConfig", Optional.of(apiConfig));
         objectNodeBuilder.withMember("disableSystemTags", true);
         ObjectNode objectNode = objectNodeBuilder.build();
         Optional<Trait> trait = provider.createTrait(ShapeId.from("aws.api#taggable"),
@@ -50,9 +53,10 @@ public class TaggableTraitTest {
 
         assertTrue(taggableTrait.getProperty().isPresent());
         assertEquals("propertyName", taggableTrait.getProperty().get());
-        assertEquals(ShapeId.from("ns.qux#TagIt"), taggableTrait.getTagApi().get());
-        assertEquals(ShapeId.from("ns.qux#Untag"), taggableTrait.getUntagApi().get());
-        assertEquals(ShapeId.from("ns.qux#ListTags"), taggableTrait.getListTagsApi().get());
+        assertTrue(taggableTrait.getApiConfig().isPresent());
+        assertEquals(ShapeId.from("ns.qux#TagIt"), taggableTrait.getApiConfig().get().getTagApi());
+        assertEquals(ShapeId.from("ns.qux#Untag"), taggableTrait.getApiConfig().get().getUntagApi());
+        assertEquals(ShapeId.from("ns.qux#ListTags"), taggableTrait.getApiConfig().get().getListTagsApi());
         assertTrue(taggableTrait.getDisableSystemTags());
 
         assertThat(taggableTrait.toNode(), equalTo(objectNode));
@@ -71,9 +75,7 @@ public class TaggableTraitTest {
         TaggableTrait taggableTrait = (TaggableTrait) trait.get();
 
         assertFalse(taggableTrait.getProperty().isPresent());
-        assertEquals(Optional.empty(), taggableTrait.getTagApi());
-        assertEquals(Optional.empty(), taggableTrait.getUntagApi());
-        assertEquals(Optional.empty(), taggableTrait.getListTagsApi());
+        assertFalse(taggableTrait.getApiConfig().isPresent());
         assertEquals(false, taggableTrait.getDisableSystemTags());
         assertThat(taggableTrait.toNode(), equalTo(objectNode));
     }

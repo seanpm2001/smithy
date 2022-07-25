@@ -211,12 +211,30 @@ structure tagEnabled {
     disableDefaultOperations: Boolean
 }
 
-    /// Points to an operation designated for a tagging APi
+/// Points to an operation designated for a tagging APi
 @idRef(
     failWhenMissing: true
     selector: "resource > operation"
 )
 string TagOperationReference
+
+/// Structure representing the configuration of resource specific tagging APIs
+structure TaggableApiConfig {
+    /// The `tagApi` property is a string value that references a non-instance
+    /// or create operation that creates or updates tags on the resource.
+    @required
+    tagApi: TagOperationReference
+
+    /// The `untagApi` property is a string value that references a non-instance
+    /// operation that removes tags on the resource.
+    @required
+    untagApi: TagOperationReference
+
+    /// The `listTagsApi` property is a string value that references a non-
+    /// instance operation which gets the current tags on the resource.
+    @required
+    listTagsApi: TagOperationReference
+}
 
 /// Indicates a resource supports CRUD operations for tags. Either through
 /// resource lifecycle or instance operations or tagging operations on the
@@ -227,20 +245,9 @@ structure taggable {
     /// resource property represents tags for the resource.
     property: String
 
-    /// The `tagApi` property is a string value that references a non-instance
-    /// or create operation that creates or updates tags on the resource.
-    /// Default value is 'TagResource.'
-    tagApi: TagOperationReference
-
-    /// The `untagApi` property is a string value that references a non-lifecycle
-    /// operation that removes tags on the resource. Default value is
-    /// 'UntagResource.'
-    untagApi: TagOperationReference
-
-    /// The `listTagsApi` property is a string value that references a non-
-    /// instance operation which gets the current tags on the resource.
-    /// Default value is 'ListTagsForResource.'
-    listTagsApi: TagOperationReference
+    /// Specifies configuration for resource specific tagging APIs if the
+    /// resource has them.
+    apiConfig: TaggableApiConfig
 
     /// Flag indicating if the resource is not able to carry AWS system level.
     /// Used by service principals. Default value is `false`

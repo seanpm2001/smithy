@@ -32,17 +32,13 @@ import software.amazon.smithy.utils.ToSmithyBuilder;
 public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilder<TaggableTrait> {
     public static final ShapeId ID = ShapeId.from("aws.api#taggable");
     private final String property;
-    private final ShapeId tagApi;
-    private final ShapeId untagApi;
-    private final ShapeId listTagsApi;
+    private final TaggableApiConfig apiConfig;
     private final boolean disableSystemTags;
 
     private TaggableTrait(Builder builder) {
         super(ID, builder.getSourceLocation());
         property = builder.property;
-        tagApi = builder.tagApi;
-        untagApi = builder.untagApi;
-        listTagsApi = builder.listTagsApi;
+        apiConfig = builder.apiConfig;
         disableSystemTags = builder.disableSystemTags;
     }
 
@@ -56,36 +52,18 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
     }
 
     /**
-     * Gets the operation referenced that satisfies the ListTagsForResource behavior.
+     * Gets the TaggableApiConfig if the resource has its own APIs for tagging.
      *
-     * @return Return the ShapeId of the operation specified for the ListTags API.
+     * @return the TaggableApiConfig for the resource.
      */
-    public Optional<ShapeId> getListTagsApi() {
-        return Optional.ofNullable(listTagsApi);
+    public Optional<TaggableApiConfig> getApiConfig() {
+        return Optional.ofNullable(apiConfig);
     }
 
     /**
-     * Gets the operation referenced that satisfies the UntagResource behavior.
+     * Gets the name of the property that represents the tags on the resource, if any.
      *
-     * @return Return the ShapeId of the operation specified for the Untag API.
-     */
-    public Optional<ShapeId> getUntagApi() {
-        return Optional.ofNullable(untagApi);
-    }
-
-    /**
-     * Gets the operation referenced that satisfies the TagResource behavior.
-     *
-     * @return Return the ShapeId of the operation specified for the Tag API.
-     */
-    public Optional<ShapeId> getTagApi() {
-        return Optional.ofNullable(tagApi);
-    }
-
-    /**
-     * Gets the rame of the property that represents the tags on the resource, if any.
-     *
-     * @return Return the name of the property that represents the tags of the resource.
+     * @return the name of the property that represents the tags of the resource.
      */
     public Optional<String> getProperty() {
         return Optional.ofNullable(property);
@@ -95,9 +73,7 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
     protected Node createNode() {
         return new ObjectNode(MapUtils.of(), getSourceLocation())
                 .withOptionalMember("property", getProperty().map(Node::from))
-                .withOptionalMember("tagApi", getTagApi().map(id -> Node.from(id.toString())))
-                .withOptionalMember("untagApi", getUntagApi().map(id -> Node.from(id.toString())))
-                .withOptionalMember("listTagsApi", getListTagsApi().map(id -> Node.from(id.toString())))
+                .withOptionalMember("apiConfig", getApiConfig().map(TaggableApiConfig::toNode))
                 .withMember("disableSystemTags", getDisableSystemTags());
     }
 
@@ -109,18 +85,14 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
     public Builder toBuilder() {
         return builder()
                 .property(property)
-                .tagApi(tagApi)
-                .untagApi(untagApi)
-                .listTagsApi(listTagsApi)
+                .apiConfig(apiConfig)
                 .disableSystemTags(disableSystemTags)
                 .sourceLocation(getSourceLocation());
     }
 
     public static final class Builder extends AbstractTraitBuilder<TaggableTrait, Builder> {
         private String property;
-        private ShapeId tagApi;
-        private ShapeId untagApi;
-        private ShapeId listTagsApi;
+        private TaggableApiConfig apiConfig;
         private boolean disableSystemTags = false;
 
         public Builder property(String property) {
@@ -128,18 +100,8 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
             return this;
         }
 
-        public Builder tagApi(ShapeId tagApi) {
-            this.tagApi = tagApi;
-            return this;
-        }
-
-        public Builder untagApi(ShapeId untagApi) {
-            this.untagApi = untagApi;
-            return this;
-        }
-
-        public Builder listTagsApi(ShapeId listTagsApi) {
-            this.listTagsApi = listTagsApi;
+        public Builder apiConfig(TaggableApiConfig apiConfig) {
+            this.apiConfig = apiConfig;
             return this;
         }
 
@@ -163,9 +125,28 @@ public final class TaggableTrait extends AbstractTrait implements ToSmithyBuilde
         @Override
         public TaggableTrait createTrait(ShapeId target, Node value) {
             NodeMapper nodeMapper = new NodeMapper();
-            TaggableTrait result = nodeMapper.deserialize(value, TaggableTrait.class);
+            TaggableTrait.Builder builder = TaggableTrait.builder();
+            ObjectNode valueObjectNode = value.expectObjectNode();
+            if (valueObjectNode.containsMember("property")) {
+                builder.property(valueObjectNode.expectStringMember("property").getValue());
+            }
+            if (valueObjectNode.containsMember("disableSystemTags")) {
+                builder.disableSystemTags(valueObjectNode.expectBooleanMember("disableSystemTags").getValue());
+            }
+            if (valueObjectNode.containsMember("apiConfig")) {
+                TaggableApiConfig.Builder apiConfigBuilder = TaggableApiConfig.builder();
+                apiConfigBuilder.tagApi(ShapeId.from(valueObjectNode.expectObjectMember("apiConfig")
+                        .expectStringMember("tagApi").getValue()));
+                apiConfigBuilder.untagApi(ShapeId.from(valueObjectNode.expectObjectMember("apiConfig")
+                        .expectStringMember("untagApi").getValue()));
+                apiConfigBuilder.listTagsApi(ShapeId.from(valueObjectNode.expectObjectMember("apiConfig")
+                        .expectStringMember("listTagsApi").getValue()));
+                builder.apiConfig(apiConfigBuilder.build());
+            }
+            TaggableTrait result = builder.build();
             result.setNodeCache(value);
             return result;
         }
     }
 }
+
