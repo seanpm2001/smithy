@@ -301,7 +301,7 @@ trait can be used to specify which property the member is bound to.
 --------------------------
 
 Summary
-    Allows the binding of resource properties to occur with a members nested
+    Allows the binding of resource properties to occur within a nested structure
     deeper than the lifecycle operation's input or output shape.
 Trait selector
     ``:is(operation -[input, output]-> structure > member :test(> structure)``
