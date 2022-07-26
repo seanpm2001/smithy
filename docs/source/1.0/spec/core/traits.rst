@@ -353,7 +353,7 @@ output members.
 The shape targeted by the member marked with this trait will have its members
 used for resource property bindings. These members may not use
 :ref:`property-trait`, or :ref:`notProperty-trait`, and Smithy will not perform
-any resource property binding exclusion , or bindings with mismatched property names.
+any resource property binding exclusion or bindings with mismatched property names.
 
 
 .. smithy-trait:: smithy.api#references
