@@ -485,6 +485,10 @@ Pros:
 
 Cons:
 
+* Adds a lot of complexity around finding and validating properties when they
+  can be sourced at multiple levels of an input or output shape.
+* Decreases readability of resource properties overall. Readers must examine
+  all members to understand the mapping structure.
 * Should not allow nesting of properties beyond 1 level deep.
 * Service author may incidentally associate more than one resource in a input
   or output shape hierarchy.
