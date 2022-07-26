@@ -32,11 +32,11 @@ resource Book {
     list: ListBooks
 }
 
-structure BookDescription {
-    title: Title
-    publishDate: Date
-    authors: AuthorList
-    price: Price
+structure BookDescription for Book {
+    $title
+    $publishDate
+    $authors
+    $price
 }
 
 structure Author {

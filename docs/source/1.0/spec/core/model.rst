@@ -2209,9 +2209,9 @@ name and property name by default.
     }
 
 The `name` property of the :ref:`property-trait` is used to bind a member to
-the named property. This is useful if the member name cannot changed due to
-backwards compatibility reasons, but resource property modeling is being added
-to your Smithy model.
+the named property when the member name does not match a property name. This is
+useful if the member name cannot be changed due backwards compatibility reasons,
+but resource property modeling is being added to your Smithy model.
 
 The following example demonstrates the ``howLikelyToRain`` member of
 ``GetForecastOutput`` can be bound to the ``chanceOfRain`` resource property:
@@ -2239,8 +2239,8 @@ The following example demonstrates the ``howLikelyToRain`` member of
   marked with :ref:`notProperty-trait` or another trait with it applied.
 - Top-level members of the input and output of resource instance operations MUST
   only use properties that resolve to declared resource properties except for
-  members marked with the @notProperty trait or marked with traits marked with
-  the @notProperty trait.
+  members marked with the ``@notProperty`` trait or marked with traits marked
+  with the ``@notProperty`` trait.
 - Defined resource properties that do not resolve to any top-level input or
   output members are invalid.
 - Members that provide a value for a resource property but use a different

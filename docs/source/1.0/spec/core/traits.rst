@@ -199,9 +199,11 @@ to call ``CreateTable`` on a table that already exists will return an error.
 ---------------------
 
 Summary
-    Used to explicitly mark a top-level input or output shape member of an
-    instance operation is not bound to a resource property. Can also mark
-    another trait to have same effect.
+    Used to explicitly mark a that top-level input or output shape member of an
+    operation is not bound to a resource property. This trait can also mark
+    another trait as a carrier for ``@notProperty`` so that if that trait is
+    applied to a member, the member is considered implicitly marked with
+    ``@notProperty``.
 Trait selector
     ``:is(operation -[input, output]-> structure > member, [trait|trait])``
 
@@ -213,6 +215,12 @@ By default, top-level input and output members of lifecycle operations must
 be bound to a resource property or identifier. Members that are neither, must
 have this trait applied, or be annotated with a different trait that has this
 trait applied.
+
+Use this trait on a resource operation input or output member that explicitly
+has a purpose unrelated to reading or writing resource properties. Also use
+this traith on a custom defined Smithy trait used to annotate input or output
+members for purposes unrelated to resource property modeling such as idempotency
+token.
 
 .. code-block:: smithy
 
@@ -311,9 +319,9 @@ Value type
     Annotation trait.
 
 By default, top-level input and output shape members of lifecycle operations are
-bound to resource properties. If the shape containing the top-level resource
-properties is nested one level deeper than the input and output shape members,
-apply this trait to that member.
+bound to resource properties. The ``@nestedProperties`` trait is used when the
+properties of a resource are nested one level deeper than top-level input and
+output members.
 
 .. code-block:: smithy
 
@@ -342,7 +350,7 @@ apply this trait to that member.
     define structures that reference resource properties without having to
     repeat the target definition.
 
-The shape targetted by the member marked with this trait will have its members
+The shape targeted by the member marked with this trait will have its members
 used for resource property bindings. These members may not use
 :ref:`property-trait`, or :ref:`notProperty-trait`, and Smithy will not perform
 any resource property binding exclusion , or bindings with mismatched property names.
