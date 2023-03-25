@@ -17,6 +17,7 @@ package software.amazon.smithy.cli.commands;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +42,8 @@ import software.amazon.smithy.model.node.ArrayNode;
 import software.amazon.smithy.model.node.Node;
 import software.amazon.smithy.model.node.ObjectNode;
 import software.amazon.smithy.model.node.StringNode;
+import software.amazon.smithy.model.selector.AttributeTemplate;
+import software.amazon.smithy.model.selector.AttributeValue;
 import software.amazon.smithy.model.selector.Selector;
 import software.amazon.smithy.model.shapes.Shape;
 import software.amazon.smithy.model.shapes.ShapeId;
@@ -68,13 +71,18 @@ final class SelectCommand extends ClasspathCommand {
     public String getDocumentation(ColorFormatter colors) {
         return "By default, each matching shape ID is printed to stdout on a new line. Pass --vars to print out a "
                + "JSON array that contains a 'shape' and 'vars' property, where the 'vars' property is a map of "
-               + "each variable that was captured when the shape was matched.";
+               + "each variable that was captured when the shape was matched. Pass --show-traits to also output a JSON "
+               + "array that contains a 'shape' and 'traits' property. Pass --show-templates to also output a JSON "
+               + "array that contains a 'shape' and 'formatted' property, where the 'formatted' property is an "
+               + "array of formatted message templates from each matching shape. Note that --vars, --show-traits, and "
+               + "--show-templates can all be used in tandem.";
     }
 
     private static final class Options implements ArgumentReceiver {
         private boolean vars;
         private Selector selector;
         private final List<ShapeId> showTraits = new ArrayList<>();
+        private final Map<String, AttributeTemplate> templates = new LinkedHashMap<>();
 
         @Override
         public boolean testOption(String name) {
@@ -103,6 +111,15 @@ final class SelectCommand extends ClasspathCommand {
                             throw new CliError("--show-traits must contain traits");
                         }
                     };
+                case "--show-template":
+                    return value -> {
+                        String[] parts = value.split(":", 2);
+                        if (parts.length != 2) {
+                            throw new CliError("Expected --show-template to be in the form of KEY:VALUE, "
+                                               + "but found: " + value);
+                        }
+                        templates.put(parts[0].trim(), AttributeTemplate.parse(parts[1].trim()));
+                    };
                 default:
                     return null;
             }
@@ -116,6 +133,15 @@ final class SelectCommand extends ClasspathCommand {
                           "Returns JSON output that includes the values of specific traits applied to matched shapes, "
                           + "stored in a 'traits' property. Provide a comma-separated list of trait shape IDs. "
                           + "Prelude traits may omit a namespace (e.g., 'required' or 'smithy.api#required').");
+            printer.param("--show-template", null, "TEMPLATES",
+                          "Returns JSON output that includes a formatted message template based on each matched shape "
+                          + "and the variables available when the shape was matched. Each value provided to"
+                          + "--show-template is in the form of KEY:VALUE where KEY is the key to add to the "
+                          + "'templates' map in the JSON output of each shape, and VALUE is an attribute template"
+                          + "(with optional whitespace after the ':'). The attribute template supports scoped "
+                          + "attribute selector variables (e.g. '@{trait|documentation}'). Use two successive @ "
+                          + "symbols to escape template expansion (e.g., '@@documentation'). This parameter can be "
+                          + "repeated to include multiple template expansion results in the output.");
             printer.option("--vars", null, "Returns JSON output that includes the variables that were captured when "
                                            + "a shape was matched, stored in a 'vars' property.");
         }
@@ -173,7 +199,7 @@ final class SelectCommand extends ClasspathCommand {
                     ObjectNode.Builder builder = Node.objectNodeBuilder()
                             .withMember("shape", Node.from(match.getShape().getId().toString()));
 
-                    if (!match.isEmpty()) {
+                    if (options.vars && !match.isEmpty()) {
                         builder.withMember("vars", collectVars(match));
                     }
 
@@ -187,6 +213,15 @@ final class SelectCommand extends ClasspathCommand {
                         builder.withMember("traits", Node.objectNode(values));
                     }
 
+                    if (!options.templates.isEmpty()) {
+                        ObjectNode.Builder templateBuilder = Node.objectNodeBuilder();
+                        AttributeValue templateValue = AttributeValue.shape(match.getShape(), match);
+                        options.templates.forEach((key, template) -> {
+                            templateBuilder.withMember(key, Node.from(template.expand(templateValue)));
+                        });
+                        builder.withMember("templates", templateBuilder.build());
+                    }
+
                     return builder.build();
                 }).collect(Collectors.toList());
 
@@ -197,8 +232,9 @@ final class SelectCommand extends ClasspathCommand {
         abstract void dumpResults(Selector selector, Model model, Options options, CliPrinter stdout);
 
         static OutputFormat determineFormat(Options options) {
-            // If --var isn't provided and --show-traits is empty, then use the SHAPE_ID_LINES output.
-            return !options.vars() && options.showTraits.isEmpty() ? SHAPE_ID_LINES : JSON;
+            return !options.vars() && options.showTraits.isEmpty() && options.templates.isEmpty()
+                   ? SHAPE_ID_LINES
+                   : JSON;
         }
 
         private static Stream<String> sortShapeIds(Collection<Shape> shapes) {

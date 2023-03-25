@@ -125,8 +125,7 @@ public class EmitEachSelectorValidatorTest {
             new EmitEachSelectorValidator(config);
         });
 
-        assertThat(e.getMessage(),
-                   containsString("Syntax error at line 1 column 12 of EmitEachSelector message template"));
+        assertThat(e.getMessage(), containsString("error at line 1 column 12"));
     }
 
     @Test
@@ -138,8 +137,7 @@ public class EmitEachSelectorValidatorTest {
             new EmitEachSelectorValidator(config);
         });
 
-        assertThat(e.getMessage(),
-                   containsString("Syntax error at line 1 column 3 of EmitEachSelector message template"));
+        assertThat(e.getMessage(), containsString("error at line 1 column 3"));
     }
 
     @Test
@@ -151,7 +149,6 @@ public class EmitEachSelectorValidatorTest {
             new EmitEachSelectorValidator(config);
         });
 
-        assertThat(e.getMessage(),
-                   containsString("Syntax error at line 1 column 7 of EmitEachSelector message template"));
+        assertThat(e.getMessage(), containsString("error at line 1 column 7"));
     }
 }
